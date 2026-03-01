@@ -12,7 +12,11 @@ const DB_URL = import.meta.env.VITE_FIREBASE_DATABASE_URL as string | undefined;
 const AUTH_KEY = 'academiaCloudAuth';
 
 export function isCloudSyncConfigured(): boolean {
-  return Boolean(API_KEY && DB_URL);
+  const apiKey = API_KEY?.trim() ?? '';
+  const dbUrl = DB_URL?.trim() ?? '';
+  const hasRealApiKey = apiKey.length > 10 && !apiKey.includes('REPLACE_WITH');
+  const hasRealDb = dbUrl.startsWith('https://') && dbUrl.includes('firebaseio.com') && !dbUrl.includes('YOUR_PROJECT_ID');
+  return hasRealApiKey && hasRealDb;
 }
 
 export function getAuthSession(): AuthSession | null {

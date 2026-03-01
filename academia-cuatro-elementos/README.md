@@ -138,3 +138,19 @@ Con esas variables:
 - se habilita panel de login nube (☁️)
 - se sincroniza automáticamente progreso local → nube al jugar con conexión
 - al iniciar sesión se intenta recuperar progreso remoto
+
+### Configurar variables para activar nube
+1. Copia el archivo de ejemplo:
+
+```bash
+cp .env.example .env
+```
+
+2. Reemplaza los valores con tu proyecto Firebase real:
+
+```bash
+VITE_FIREBASE_API_KEY=AIza...
+VITE_FIREBASE_DATABASE_URL=https://mi-proyecto-default-rtdb.firebaseio.com
+```
+
+3. Reinicia `pnpm dev` o vuelve a desplegar para que Vite tome las variables.
