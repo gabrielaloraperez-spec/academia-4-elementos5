@@ -15,7 +15,7 @@ import { levels } from './data/gameData';
 type Screen = 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
 
 const GameApp: React.FC = () => {
-  const { state, startLevel, completeLevel, completeBoss, resetLevel } = useGame();
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel } = useGame();
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [currentLevelId, setCurrentLevelId] = useState<number>(0);
   const [gameOverScore, setGameOverScore] = useState<number>(0);
@@ -42,13 +42,8 @@ const GameApp: React.FC = () => {
   };
 
   const handleKnowledgeComplete = () => {
-    // After completing knowledge room, unlock next level
-    if (currentLevelId === 4) {
-      // Boss is unlocked after level 4
-      setCurrentScreen('map');
-    } else {
-      setCurrentScreen('map');
-    }
+    completeKnowledgeRoom();
+    setCurrentScreen('map');
   };
 
   const handleStartBoss = () => {
@@ -81,6 +76,11 @@ const GameApp: React.FC = () => {
 
   const getCurrentLevel = () => {
     return levels.find(l => l.id === currentLevelId) || null;
+  };
+
+  const handleBackToMapAnytime = () => {
+    resetLevel();
+    setCurrentScreen('map');
   };
 
   // Render current screen
@@ -167,8 +167,16 @@ const GameApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       {renderScreen()}
+      {state.playerName && currentScreen !== 'map' && (
+        <button
+          onClick={handleBackToMapAnytime}
+          className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-black/70 text-white font-semibold border border-white/20 hover:bg-black/85"
+        >
+          ← Mapa
+        </button>
+      )}
     </div>
   );
 };

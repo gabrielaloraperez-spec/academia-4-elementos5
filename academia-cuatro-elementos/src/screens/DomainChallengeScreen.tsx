@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Level, Problem } from '../data/gameData';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
 
 interface DomainChallengeScreenProps {
   level: Level | null;
@@ -93,7 +94,10 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
     setAnsweredCount((prev) => prev + 1);
 
     if (isCorrect) {
+      playCorrect();
       setCorrectAnswers((prev) => prev + 1);
+    } else {
+      playWrong();
     }
 
     setTimeout(() => {
@@ -101,6 +105,37 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
       setCurrentProblemIndex((prev) => (prev + 1) % mixedProblems.length);
     }, 500);
   };
+
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!started && event.key === 'Enter') {
+        setStarted(true);
+        return;
+      }
+
+      if (result === 'success' && event.key === 'Enter') {
+        onComplete();
+        return;
+      }
+
+      if (result === 'failed' && event.key === 'Enter') {
+        onFail();
+        return;
+      }
+
+      if (started && result === null && feedback === null && ['1', '2', '3', '4'].includes(event.key)) {
+        const index = Number(event.key) - 1;
+        const option = currentProblem?.options[index];
+        if (option !== undefined) {
+          handleAnswer(option);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [started, result, feedback, currentProblem]);
 
   if (!started) {
     return (
@@ -115,7 +150,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
             }
           </p>
           <button
-            onClick={() => setStarted(true)}
+            onClick={() => { playUiClick(); setStarted(true); }}
             className="mt-6 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl"
           >
             Iniciar reto
