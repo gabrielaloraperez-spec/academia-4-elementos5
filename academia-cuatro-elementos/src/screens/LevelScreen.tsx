@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../context/useGame';
 import { Level } from '../data/gameData';
 import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/GameComponents';
@@ -163,6 +163,38 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
       onComplete();
     }, 1200);
   };
+
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (showTransition && event.key === 'Enter') {
+        setShowTransition(false);
+        return;
+      }
+
+      if (gameOverConfig && event.key === 'Enter') {
+        handleGameOverAction();
+        return;
+      }
+
+      const abilityMap: Record<string, string> = { q: 'shield', w: 'recharge', e: 'multiplier', r: 'extratime' };
+      const abilityId = abilityMap[event.key.toLowerCase()];
+      if (abilityId) {
+        handleUseAbility(abilityId);
+      }
+
+      if (!showTransition && !gameOverConfig && feedback === null && ['1', '2', '3', '4'].includes(event.key)) {
+        const index = Number(event.key) - 1;
+        const option = problem?.options[index];
+        if (option !== undefined) {
+          handleAnswer(option);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showTransition, gameOverConfig, feedback, problem, state.mana, state.abilityUses, multiplierActive, shieldActive]);
 
   const handleUseAbility = (abilityId: string) => {
     const success = activateAbility(abilityId);

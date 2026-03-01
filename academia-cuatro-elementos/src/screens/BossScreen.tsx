@@ -108,6 +108,28 @@ export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }
     }
   };
 
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (feedback === null && ['1', '2', '3', '4'].includes(event.key)) {
+        const index = Number(event.key) - 1;
+        const option = problem?.options[index];
+        if (option !== undefined) {
+          handleAnswer(option);
+        }
+      }
+
+      const abilityMap: Record<string, string> = { q: 'shield', w: 'recharge', e: 'multiplier', r: 'extratime' };
+      const abilityId = abilityMap[event.key.toLowerCase()];
+      if (abilityId) {
+        handleUseAbility(abilityId);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [feedback, problem, state.mana, state.abilityUses, multiplierActive, shieldActive, timeFrozen]);
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../context/useGame';
 
 const AVATARS = ['🧙', '🧝', '🧛', '🧚', '🦸', '🦹', '🧑‍🚀', '🐉'];
@@ -32,12 +32,37 @@ export const WelcomeScreen: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        if (step === 'cover') {
+          setStep('story');
+        } else if (step === 'story') {
+          setStep('profile');
+        } else {
+          handleStart();
+        }
+      }
+
+      if (step === 'profile' && (event.key === 'ArrowRight' || event.key === 'ArrowLeft')) {
+        event.preventDefault();
+        const delta = event.key === 'ArrowRight' ? 1 : -1;
+        const currentIndex = AVATARS.indexOf(selectedAvatar);
+        const nextIndex = (currentIndex + delta + AVATARS.length) % AVATARS.length;
+        setSelectedAvatar(AVATARS[nextIndex]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [step, selectedAvatar, name]);
+
   if (step === 'cover') {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-indigo-950 to-sky-950 flex items-center justify-center p-4">
         <div className="w-full max-w-3xl text-center">
-          <div className="mx-auto mb-8 h-44 w-44 rounded-full border border-cyan-300/40 bg-gradient-to-br from-red-500/20 via-sky-500/20 to-emerald-400/20 shadow-[0_0_80px_rgba(56,189,248,0.3)] flex items-center justify-center">
-            <div className="text-6xl">🌍</div>
+          <div className="mx-auto mb-8 h-44 w-44 rounded-full border border-cyan-300/40 bg-gradient-to-br from-red-500/20 via-sky-500/20 to-emerald-400/20 shadow-[0_0_80px_rgba(56,189,248,0.3)] flex items-center justify-center overflow-hidden">
+            <img src="/icon-192.png" alt="Academia de los Cuatro Elementos" className="h-28 w-28 object-contain" />
           </div>
 
           <div className="mx-auto mb-6 h-24 w-24 rounded-full bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center shadow-lg">
