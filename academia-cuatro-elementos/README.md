@@ -112,3 +112,29 @@ Set-Location .\academia-cuatro-reinos
 pnpm run build
 Set-Location ..
 ```
+
+## Persistencia PWA (offline + nube)
+
+Esta app ahora guarda progreso en **IndexedDB**:
+- estado del juego (nivel, puntaje, vidas, logros, etc.)
+- sesión de pantalla (pantalla actual y progreso de navegación)
+
+Al recargar la página, el juego continúa desde el último punto guardado.
+
+### Offline
+La PWA usa `vite-plugin-pwa` + Workbox con cache de navegación y assets para funcionar sin conexión.
+
+### Login y guardado en la nube (Firebase REST)
+Se agregó opción de login/registro (email + contraseña) y sincronización automática cuando hay conexión.
+
+Configura estas variables en `.env`:
+
+```bash
+VITE_FIREBASE_API_KEY=tu_api_key
+VITE_FIREBASE_DATABASE_URL=https://tu-proyecto-default-rtdb.firebaseio.com
+```
+
+Con esas variables:
+- se habilita panel de login nube (☁️)
+- se sincroniza automáticamente progreso local → nube al jugar con conexión
+- al iniciar sesión se intenta recuperar progreso remoto
