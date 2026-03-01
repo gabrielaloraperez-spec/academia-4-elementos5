@@ -32,6 +32,7 @@ type Screen = 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | '
 const GameApp: React.FC = () => {
   const game = useGame();
   const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel } = game;
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel } = useGame();
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [currentLevelId, setCurrentLevelId] = useState<number>(0);
   const [gameOverScore, setGameOverScore] = useState<number>(0);
@@ -204,6 +205,7 @@ const GameApp: React.FC = () => {
     setCurrentScreen('map');
   };
 
+  // Render current screen
   const renderScreen = () => {
     switch (currentScreen) {
       case 'welcome':
@@ -259,7 +261,6 @@ const GameApp: React.FC = () => {
   return (
     <div className="min-h-screen relative">
       {renderScreen()}
-
       {state.playerName && currentScreen !== 'map' && (
         <button
           onClick={handleBackToMapAnytime}
