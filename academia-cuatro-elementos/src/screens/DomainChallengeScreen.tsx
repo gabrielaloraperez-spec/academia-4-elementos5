@@ -58,7 +58,6 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
     if (!started || result !== null) return;
 
     if (answeredCount >= MIN_ANSWERS_FOR_EARLY_PASS && accuracy >= PASS_ACCURACY) {
-      playSuccess();
       setResult('success');
       return;
     }
