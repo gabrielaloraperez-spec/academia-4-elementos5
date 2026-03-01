@@ -65,9 +65,6 @@ export const WelcomeScreen: React.FC = () => {
             <img src="/icon-192.png" alt="Academia de los Cuatro Elementos" className="h-28 w-28 object-contain" />
           </div>
 
-          <div className="mx-auto mb-6 h-24 w-24 rounded-full bg-white/10 backdrop-blur border border-white/20 flex items-center justify-center shadow-lg">
-            <div className="text-5xl">🧙</div>
-          </div>
 
           <h1 className="text-4xl md:text-6xl font-black text-white tracking-wide leading-tight">
             ACADEMIA DE LOS CUATRO ELEMENTOS
@@ -81,7 +78,7 @@ export const WelcomeScreen: React.FC = () => {
             onClick={() => setStep('story')}
             className="mt-10 px-10 py-4 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-xl transition-all duration-300 hover:scale-[1.02]"
           >
-            Comenzar Iniciación
+            Comenzar
           </button>
         </div>
       </div>

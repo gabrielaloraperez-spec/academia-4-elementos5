@@ -78,6 +78,11 @@ const GameApp: React.FC = () => {
     return levels.find(l => l.id === currentLevelId) || null;
   };
 
+  const handleBackToMapAnytime = () => {
+    resetLevel();
+    setCurrentScreen('map');
+  };
+
   // Render current screen
   const renderScreen = () => {
     switch (currentScreen) {
@@ -162,8 +167,16 @@ const GameApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       {renderScreen()}
+      {state.playerName && currentScreen !== 'map' && (
+        <button
+          onClick={handleBackToMapAnytime}
+          className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-black/70 text-white font-semibold border border-white/20 hover:bg-black/85"
+        >
+          ← Mapa
+        </button>
+      )}
     </div>
   );
 };

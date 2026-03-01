@@ -3,6 +3,7 @@ import { useGame } from '../context/useGame';
 import { levels, achievements as allAchievements } from '../data/gameData';
 import { KingdomCard } from '../components/kingdom/KingdomCard';
 import { TimeTower } from '../components/kingdom/TimeTower';
+import { playUiClick } from '../lib/sound';
 
 interface MapScreenProps {
   onLevelSelect: (levelId: number) => void;
@@ -88,7 +89,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onLevelSelect, onBossSelec
             </div>
             <button
               type="button"
-              onClick={() => setShowAchievements((prev) => !prev)}
+              onClick={() => { playUiClick(); setShowAchievements((prev) => !prev); }}
               className="h-10 w-10 rounded-xl bg-amber-400/20 border border-amber-300/40 text-amber-200 hover:bg-amber-400/30"
               aria-label="Ver logros"
             >
@@ -145,7 +146,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onLevelSelect, onBossSelec
             unlocked={state.unlockedLevels.includes(level.id)}
             completed={state.unlockedLevels.includes(level.id + 1)}
             highScore={state.highScores[level.id]}
-            onSelect={() => onLevelSelect(level.id)}
+            onSelect={() => { playUiClick(); onLevelSelect(level.id); }}
           />
         ))}
 

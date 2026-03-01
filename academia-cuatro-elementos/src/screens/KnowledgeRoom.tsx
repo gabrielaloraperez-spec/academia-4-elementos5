@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Level } from '../data/gameData';
 import { AbilityButton, ManaBar } from '../components/GameComponents';
 import { useGame } from '../context/useGame';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
 
 interface KnowledgeRoomProps {
   level: Level;
@@ -40,10 +41,15 @@ export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete 
     setShowResult(true);
 
     if (!answeredCorrectly && !correctedByShield) {
+      playWrong();
       setAllCorrect(false);
     }
 
     setShieldSavedAnswer(correctedByShield);
+
+    if (answeredCorrectly || correctedByShield) {
+      playCorrect();
+    }
 
     if (correctedByShield) {
       setShieldActive(false);
@@ -57,6 +63,7 @@ export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete 
         setInsightActive(false);
         setShieldSavedAnswer(false);
       } else {
+        playSuccess();
         onComplete();
       }
     }, 1500);
@@ -65,6 +72,7 @@ export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete 
   const handleUseAbility = (abilityId: string) => {
     const success = activateAbility(abilityId);
     if (!success) return;
+    playUiClick();
 
     if (abilityId === 'shield') {
       setShieldActive(true);

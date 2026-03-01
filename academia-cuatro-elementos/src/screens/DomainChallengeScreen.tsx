@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Level, Problem } from '../data/gameData';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
 
 interface DomainChallengeScreenProps {
   level: Level | null;
@@ -57,6 +58,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
     if (!started || result !== null) return;
 
     if (answeredCount >= MIN_ANSWERS_FOR_EARLY_PASS && accuracy >= PASS_ACCURACY) {
+      playSuccess();
       setResult('success');
       return;
     }
@@ -93,7 +95,10 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
     setAnsweredCount((prev) => prev + 1);
 
     if (isCorrect) {
+      playCorrect();
       setCorrectAnswers((prev) => prev + 1);
+    } else {
+      playWrong();
     }
 
     setTimeout(() => {
@@ -146,7 +151,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
             }
           </p>
           <button
-            onClick={() => setStarted(true)}
+            onClick={() => { playUiClick(); setStarted(true); }}
             className="mt-6 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl"
           >
             Iniciar reto
