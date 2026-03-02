@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useGame } from '../context/useGame';
 import { bossProblems, Problem } from '../data/gameData';
 import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/GameComponents';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
 
 interface BossScreenProps {
   onComplete: () => void;
@@ -58,6 +59,7 @@ export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }
     const isCorrect = answer === problem.answer;
 
     if (isCorrect) {
+      playCorrect();
       setFeedback('correct');
       setShowHint(false);
       const scoreMultiplier = multiplierActive ? 2 : 1;
@@ -67,11 +69,13 @@ export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }
       answerQuestion(true, true, scoreMultiplier);
     } else {
       if (shieldActive) {
+        playUiClick();
         setShieldActive(false);
         setFeedback('correct');
         setShowHint(false);
         answerQuestion(true, true);
       } else {
+        playWrong();
         setFeedback('incorrect');
         // Show hint after incorrect answer if available
         if (problem.hint) {
@@ -89,6 +93,7 @@ export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }
       if (currentProblem < bossProblems.length - 1) {
         setCurrentProblem(prev => prev + 1);
       } else {
+        playSuccess();
         onComplete();
       }
     }, 1200);
@@ -97,6 +102,7 @@ export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }
   const handleUseAbility = (abilityId: string) => {
     const success = activateAbility(abilityId);
     if (success) {
+      playUiClick();
       if (abilityId === 'multiplier') {
         setMultiplierActive(true);
       } else if (abilityId === 'shield') {
@@ -107,6 +113,28 @@ export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }
       }
     }
   };
+
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (feedback === null && ['1', '2', '3', '4'].includes(event.key)) {
+        const index = Number(event.key) - 1;
+        const option = problem?.options[index];
+        if (option !== undefined) {
+          handleAnswer(option);
+        }
+      }
+
+      const abilityMap: Record<string, string> = { q: 'shield', w: 'recharge', e: 'multiplier', r: 'extratime' };
+      const abilityId = abilityMap[event.key.toLowerCase()];
+      if (abilityId) {
+        handleUseAbility(abilityId);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [feedback, problem, state.mana, state.abilityUses, multiplierActive, shieldActive, timeFrozen]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);

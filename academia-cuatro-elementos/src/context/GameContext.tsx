@@ -1,23 +1,45 @@
-import React, { useState, useEffect, ReactNode } from 'react';
+import React, { useState, useEffect, ReactNode, useRef } from 'react';
 import { levels, abilities, SCORING } from '../data/gameData';
 import { GameContext, GameState, initialState } from './gameConstants';
+import { loadGameStateFromIndexedDb, saveGameStateToIndexedDb } from '../lib/persistence';
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<GameState>(() => {
-    const saved = localStorage.getItem('academiaGameState');
-    if (!saved) return initialState;
-
-    const parsed = JSON.parse(saved);
-    return {
-      ...initialState,
-      ...parsed,
-      abilityUses: { ...initialState.abilityUses, ...(parsed.abilityUses || {}) },
-      operationMastery: { ...initialState.operationMastery, ...(parsed.operationMastery || {}) },
-    };
-  });
+  const [state, setState] = useState<GameState>(initialState);
+  const hydratedRef = useRef(false);
 
   useEffect(() => {
+    let mounted = true;
+
+    const hydrate = async () => {
+      const savedIndexed = await loadGameStateFromIndexedDb();
+      const legacySaved = localStorage.getItem('academiaGameState');
+      const legacyParsed = legacySaved ? JSON.parse(legacySaved) : null;
+      const source = savedIndexed?.data ?? legacyParsed;
+
+      if (!mounted || !source) {
+        hydratedRef.current = true;
+        return;
+      }
+
+      setState({
+        ...initialState,
+        ...source,
+        abilityUses: { ...initialState.abilityUses, ...(source.abilityUses || {}) },
+        operationMastery: { ...initialState.operationMastery, ...(source.operationMastery || {}) },
+      });
+      hydratedRef.current = true;
+    };
+
+    void hydrate();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hydratedRef.current) return;
     localStorage.setItem('academiaGameState', JSON.stringify(state));
+    void saveGameStateToIndexedDb(state);
   }, [state]);
 
   const checkAchievements = (newState: GameState) => {

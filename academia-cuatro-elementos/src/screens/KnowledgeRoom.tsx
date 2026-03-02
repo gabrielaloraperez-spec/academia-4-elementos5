@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Level } from '../data/gameData';
+import { AbilityButton, ManaBar } from '../components/GameComponents';
+import { useGame } from '../context/useGame';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
 
 interface KnowledgeRoomProps {
   level: Level;
@@ -7,39 +10,116 @@ interface KnowledgeRoomProps {
 }
 
 export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete }) => {
+  const { state, useAbility: activateAbility, getAbilityData } = useGame();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [allCorrect, setAllCorrect] = useState(true);
+  const [shieldActive, setShieldActive] = useState(false);
+  const [insightActive, setInsightActive] = useState(false);
+  const [shieldSavedAnswer, setShieldSavedAnswer] = useState(false);
 
   const { knowledge } = level;
   const question = knowledge.miniQuestions[currentQuestion];
 
+  const hiddenWrongIndexes = useMemo(() => {
+    if (!insightActive) return new Set<number>();
+    const wrongIndexes = question.options
+      .map((_, index) => index)
+      .filter((index) => index !== question.correctAnswer)
+      .slice(0, 1);
+    return new Set(wrongIndexes);
+  }, [insightActive, question]);
+
   const handleAnswer = (answerIndex: number) => {
     if (showResult) return;
+
+    const answeredCorrectly = answerIndex === question.correctAnswer;
+    const correctedByShield = !answeredCorrectly && shieldActive;
 
     setSelectedAnswer(answerIndex);
     setShowResult(true);
 
-    if (answerIndex !== question.correctAnswer) {
+    if (!answeredCorrectly && !correctedByShield) {
+      playWrong();
       setAllCorrect(false);
+    }
+
+    setShieldSavedAnswer(correctedByShield);
+
+    if (answeredCorrectly || correctedByShield) {
+      playCorrect();
+    }
+
+    if (correctedByShield) {
+      setShieldActive(false);
     }
 
     setTimeout(() => {
       if (currentQuestion < knowledge.miniQuestions.length - 1) {
-        setCurrentQuestion(prev => prev + 1);
+        setCurrentQuestion((prev) => prev + 1);
         setSelectedAnswer(null);
         setShowResult(false);
+        setInsightActive(false);
+        setShieldSavedAnswer(false);
       } else {
+        playSuccess();
         onComplete();
       }
     }, 1500);
   };
 
+  const handleUseAbility = (abilityId: string) => {
+    const success = activateAbility(abilityId);
+    if (!success) return;
+    playUiClick();
+
+    if (abilityId === 'shield') {
+      setShieldActive(true);
+    }
+
+    if (abilityId === 'multiplier') {
+      setInsightActive(true);
+    }
+
+    if (abilityId === 'recharge') {
+      setInsightActive(true);
+    }
+
+    if (abilityId === 'extratime') {
+      setShieldActive(true);
+    }
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!showResult && ['1', '2', '3', '4'].includes(event.key)) {
+        const index = Number(event.key) - 1;
+        if (question.options[index] !== undefined && !hiddenWrongIndexes.has(index)) {
+          handleAnswer(index);
+        }
+      }
+
+      const abilityMap: Record<string, string> = {
+        q: 'shield',
+        w: 'recharge',
+        e: 'multiplier',
+        r: 'extratime',
+      };
+
+      const abilityId = abilityMap[event.key.toLowerCase()];
+      if (abilityId) {
+        handleUseAbility(abilityId);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showResult, question, hiddenWrongIndexes]);
+
   return (
     <div className="min-h-screen p-4 flex items-center justify-center" style={{ backgroundColor: level.bgColor }}>
       <div className="max-w-lg w-full">
-        {/* Header */}
         <div className="text-center mb-6">
           <div className="text-5xl mb-3">📜</div>
           <h1 className="text-2xl font-bold" style={{ color: level.color }}>
@@ -48,25 +128,20 @@ export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete 
           <p className="text-gray-600">{level.name}</p>
         </div>
 
-        {/* Scroll Container */}
         <div className="bg-amber-50 rounded-3xl shadow-2xl overflow-hidden">
-          {/* Parchment Effect */}
           <div className="bg-gradient-to-b from-amber-100 to-amber-200 p-6">
-            {/* Title */}
             <div className="text-center mb-6">
               <h2 className="text-xl font-bold text-amber-900" style={{ fontFamily: 'serif' }}>
                 {knowledge.title}
               </h2>
             </div>
 
-            {/* Content */}
             <div className="bg-white/80 rounded-2xl p-4 mb-6">
               <p className="text-gray-700 leading-relaxed text-sm">
                 {knowledge.content}
               </p>
             </div>
 
-            {/* Interactive Quiz */}
             <div className="mt-6">
               <div className="text-center mb-4">
                 <span className="text-sm font-medium text-amber-700">
@@ -81,18 +156,20 @@ export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete 
 
                 <div className="space-y-2">
                   {question.options.map((option, index) => {
-                    let buttonClass = "w-full p-3 rounded-xl font-medium transition-all duration-200 ";
+                    if (hiddenWrongIndexes.has(index)) return null;
+
+                    let buttonClass = 'w-full p-3 rounded-xl font-medium transition-all duration-200 ';
 
                     if (showResult) {
-                      if (index === question.correctAnswer) {
-                        buttonClass += "bg-green-500 text-white";
+                      if (index === question.correctAnswer || (shieldSavedAnswer && index === selectedAnswer)) {
+                        buttonClass += 'bg-green-500 text-white';
                       } else if (index === selectedAnswer) {
-                        buttonClass += "bg-red-400 text-white";
+                        buttonClass += 'bg-red-400 text-white';
                       } else {
-                        buttonClass += "bg-white/50 text-gray-600";
+                        buttonClass += 'bg-white/50 text-gray-600';
                       }
                     } else {
-                      buttonClass += "bg-white hover:bg-amber-50 text-amber-900";
+                      buttonClass += 'bg-white hover:bg-amber-50 text-amber-900';
                     }
 
                     return (
@@ -110,7 +187,7 @@ export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete 
 
                 {showResult && (
                   <div className="mt-4 text-center">
-                    {selectedAnswer === question.correctAnswer ? (
+                    {selectedAnswer === question.correctAnswer || shieldSavedAnswer ? (
                       <span className="text-green-600 font-bold">✅ ¡Correcto!</span>
                     ) : (
                       <span className="text-red-600 font-bold">
@@ -124,10 +201,34 @@ export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete 
           </div>
         </div>
 
-        {/* Footer */}
+        <div className="mt-4 bg-white rounded-2xl border border-amber-200 p-4 shadow-lg">
+          <div className="mb-3">
+            <ManaBar mana={state.mana} />
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {['shield', 'recharge', 'multiplier', 'extratime'].map((abilityId) => {
+              const ability = getAbilityData(abilityId);
+              if (!ability) return null;
+              return (
+                <AbilityButton
+                  key={abilityId}
+                  id={abilityId}
+                  name={ability.name}
+                  icon={ability.icon}
+                  cost={ability.cost}
+                  usesLeft={state.abilityUses[abilityId]}
+                  available={state.mana >= ability.cost && state.abilityUses[abilityId] > 0}
+                  onClick={() => handleUseAbility(abilityId)}
+                />
+              );
+            })}
+          </div>
+          <p className="mt-2 text-center text-xs text-gray-500">Atajos: 1-4 para responder, Q/W/E/R para poderes</p>
+        </div>
+
         <div className="text-center mt-6 text-gray-500 text-sm">
           {!showResult && (
-            <p>Responde correctamente para continuar</p>
+            <p>Responde correctamente para continuar {allCorrect ? '✨' : ''}</p>
           )}
         </div>
       </div>
