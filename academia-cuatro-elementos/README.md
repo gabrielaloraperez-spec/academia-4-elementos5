@@ -164,3 +164,6 @@ Define estas variables directamente en **Project Settings → Environment Variab
 - `VITE_FIREBASE_DATABASE_URL`
 
 > Nota: no uses referencias a `@secret` en `vercel.json` si esos secrets no existen, porque el deploy falla en build-time.
+
+
+> Importante: `VITE_FIREBASE_DATABASE_URL` debe ser la URL de **Realtime Database** y puede terminar en `firebaseio.com` o `firebasedatabase.app` (no usar URL de Firestore).

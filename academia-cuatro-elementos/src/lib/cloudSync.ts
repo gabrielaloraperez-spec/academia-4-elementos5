@@ -15,7 +15,8 @@ export function isCloudSyncConfigured(): boolean {
   const apiKey = API_KEY?.trim() ?? '';
   const dbUrl = DB_URL?.trim() ?? '';
   const hasRealApiKey = apiKey.length > 10 && !apiKey.includes('REPLACE_WITH');
-  const hasRealDb = dbUrl.startsWith('https://') && dbUrl.includes('firebaseio.com') && !dbUrl.includes('YOUR_PROJECT_ID');
+  const hasSupportedDomain = dbUrl.includes('firebaseio.com') || dbUrl.includes('firebasedatabase.app');
+  const hasRealDb = dbUrl.startsWith('https://') && hasSupportedDomain && !dbUrl.includes('YOUR_PROJECT_ID');
   return hasRealApiKey && hasRealDb;
 }
 
@@ -80,18 +81,25 @@ interface CloudPayload {
 }
 
 function getUserEndpoint(session: AuthSession): string {
-  return `${DB_URL}/academiaProgress/${session.localId}.json?auth=${session.idToken}`;
+  const baseUrl = (DB_URL ?? '').replace(/\/$/, '');
+  return `${baseUrl}/academiaProgress/${session.localId}.json?auth=${session.idToken}`;
 }
 
 export async function pushCloudProgress(payload: CloudPayload): Promise<void> {
   const session = getAuthSession();
   if (!isCloudSyncConfigured() || !session) return;
 
-  await fetch(getUserEndpoint(session), {
+  const response = await fetch(getUserEndpoint(session), {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    const message = body?.error ?? `No se pudo sincronizar (${response.status})`;
+    throw new Error(typeof message === 'string' ? message : JSON.stringify(message));
+  }
 }
 
 export async function pullCloudProgress(): Promise<CloudPayload | null> {
