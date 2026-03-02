@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "cd academia-4-elementos5/academia-cuatro-elementos && pnpm install --no-frozen-lockfile",
+  "buildCommand": "cd academia-4-elementos5/academia-cuatro-elementos && pnpm run build",
+  "outputDirectory": "academia-4-elementos5/academia-cuatro-elementos/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
