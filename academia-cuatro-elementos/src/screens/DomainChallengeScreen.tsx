@@ -58,7 +58,6 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
     if (!started || result !== null) return;
 
     if (answeredCount >= MIN_ANSWERS_FOR_EARLY_PASS && accuracy >= PASS_ACCURACY) {
-      playSuccess();
       setResult('success');
       return;
     }
@@ -73,6 +72,19 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
     const secs = seconds % 60;
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   };
+
+  if (!level || mixedProblems.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-sky-900 to-indigo-950 flex items-center justify-center p-4">
+        <div className="max-w-xl w-full bg-white rounded-3xl p-8 text-center">
+          <p className="text-gray-700 mb-4">No se encontró información del nivel para el reto de dominio.</p>
+          <button onClick={onFail} className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold">
+            Volver al reino
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleAnswer = (answer: number) => {
     if (!started || !currentProblem || feedback !== null || timeLeft <= 0 || result !== null) return;
@@ -124,19 +136,6 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [started, result, feedback, currentProblem]);
-
-  if (!level || mixedProblems.length === 0) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-sky-900 to-indigo-950 flex items-center justify-center p-4">
-        <div className="max-w-xl w-full bg-white rounded-3xl p-8 text-center">
-          <p className="text-gray-700 mb-4">No se encontró información del nivel para el reto de dominio.</p>
-          <button onClick={onFail} className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold">
-            Volver al reino
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   if (!started) {
     return (

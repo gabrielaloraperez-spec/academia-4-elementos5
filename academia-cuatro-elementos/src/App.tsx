@@ -30,15 +30,7 @@ import {
 type Screen = 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
 
 const GameApp: React.FC = () => {
-  const {
-    state: gameState,
-    startLevel: gameStartLevel,
-    completeLevel: gameCompleteLevel,
-    completeBoss: gameCompleteBoss,
-    completeKnowledgeRoom: gameCompleteKnowledgeRoom,
-    resetLevel: gameResetLevel,
-    setPlayerInfo: gameSetPlayerInfo,
-  } = useGame();
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel } = useGame();
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [currentLevelId, setCurrentLevelId] = useState<number>(0);
   const [gameOverScore, setGameOverScore] = useState<number>(0);
@@ -170,7 +162,7 @@ const GameApp: React.FC = () => {
   };
 
   const handleKnowledgeComplete = () => {
-    gameCompleteKnowledgeRoom();
+    completeKnowledgeRoom();
     setCurrentScreen('map');
   };
 
@@ -207,10 +199,11 @@ const GameApp: React.FC = () => {
   };
 
   const handleBackToMapAnytime = () => {
-    gameResetLevel();
+    resetLevel();
     setCurrentScreen('map');
   };
 
+  // Render current screen
   const renderScreen = () => {
     switch (currentScreen) {
       case 'welcome':
@@ -268,6 +261,7 @@ const GameApp: React.FC = () => {
       {renderScreen()}
 
       {gameState.playerName && currentScreen !== 'map' && (
+      {state.playerName && currentScreen !== 'map' && (
         <button
           onClick={handleBackToMapAnytime}
           className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-black/70 text-white font-semibold border border-white/20 hover:bg-black/85"
