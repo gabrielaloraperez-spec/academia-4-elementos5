@@ -30,7 +30,7 @@ import {
 type Screen = 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
 
 const GameApp: React.FC = () => {
-  const game = useGame();
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel } = useGame();
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [currentLevelId, setCurrentLevelId] = useState<number>(0);
   const [gameOverScore, setGameOverScore] = useState<number>(0);
@@ -162,7 +162,7 @@ const GameApp: React.FC = () => {
   };
 
   const handleKnowledgeComplete = () => {
-    game.completeKnowledgeRoom();
+    completeKnowledgeRoom();
     setCurrentScreen('map');
   };
 
@@ -199,10 +199,11 @@ const GameApp: React.FC = () => {
   };
 
   const handleBackToMapAnytime = () => {
-    game.resetLevel();
+    resetLevel();
     setCurrentScreen('map');
   };
 
+  // Render current screen
   const renderScreen = () => {
     switch (currentScreen) {
       case 'welcome':
@@ -258,8 +259,7 @@ const GameApp: React.FC = () => {
   return (
     <div className="min-h-screen relative">
       {renderScreen()}
-
-      {game.state.playerName && currentScreen !== 'map' && (
+      {state.playerName && currentScreen !== 'map' && (
         <button
           onClick={handleBackToMapAnytime}
           className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-black/70 text-white font-semibold border border-white/20 hover:bg-black/85"
@@ -267,46 +267,6 @@ const GameApp: React.FC = () => {
           ← Mapa
         </button>
       )}
-
-      <div className="fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setShowCloudPanel((prev) => !prev)}
-          className="px-3 py-2 rounded-xl bg-indigo-900/80 text-white text-sm border border-indigo-300/40"
-        >
-          ☁️ {authSession ? 'Nube conectada' : 'Login nube'}
-        </button>
-
-        {showCloudPanel && (
-          <div className="mt-2 w-72 bg-slate-900/95 border border-white/20 rounded-xl p-3 text-white text-sm space-y-2">
-            <p>Estado: {cloudStatus}</p>
-            {cloudSyncAt > 0 && <p className="text-xs text-white/70">Última sync: {new Date(cloudSyncAt).toLocaleTimeString()}</p>}
-            {!authSession ? (
-              <>
-                <input
-                  value={cloudEmail}
-                  onChange={(e) => setCloudEmail(e.target.value)}
-                  className="w-full px-2 py-1 rounded bg-white/10 border border-white/20"
-                  placeholder="email"
-                />
-                <input
-                  type="password"
-                  value={cloudPassword}
-                  onChange={(e) => setCloudPassword(e.target.value)}
-                  className="w-full px-2 py-1 rounded bg-white/10 border border-white/20"
-                  placeholder="password"
-                />
-                <div className="flex gap-2">
-                  <button className="flex-1 px-2 py-1 rounded bg-indigo-600" onClick={() => void handleCloudLogin('login')}>Entrar</button>
-                  <button className="flex-1 px-2 py-1 rounded bg-emerald-600" onClick={() => void handleCloudLogin('register')}>Crear</button>
-                </div>
-              </>
-            ) : (
-              <button className="w-full px-2 py-1 rounded bg-rose-600" onClick={handleCloudLogout}>Cerrar sesión</button>
-            )}
-            {cloudError && <p className="text-rose-300 text-xs">{cloudError}</p>}
-          </div>
-        )}
-      </div>
     </div>
   );
 };
