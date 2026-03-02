@@ -30,7 +30,7 @@ import {
 type Screen = 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
 
 const GameApp: React.FC = () => {
-  const game = useGame();
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel } = useGame();
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [currentLevelId, setCurrentLevelId] = useState<number>(0);
   const [gameOverScore, setGameOverScore] = useState<number>(0);
@@ -162,7 +162,7 @@ const GameApp: React.FC = () => {
   };
 
   const handleKnowledgeComplete = () => {
-    game.completeKnowledgeRoom();
+    completeKnowledgeRoom();
     setCurrentScreen('map');
   };
 
@@ -199,10 +199,11 @@ const GameApp: React.FC = () => {
   };
 
   const handleBackToMapAnytime = () => {
-    game.resetLevel();
+    resetLevel();
     setCurrentScreen('map');
   };
 
+  // Render current screen
   const renderScreen = () => {
     switch (currentScreen) {
       case 'welcome':
@@ -258,8 +259,7 @@ const GameApp: React.FC = () => {
   return (
     <div className="min-h-screen relative">
       {renderScreen()}
-
-      {game.state.playerName && currentScreen !== 'map' && (
+      {state.playerName && currentScreen !== 'map' && (
         <button
           onClick={handleBackToMapAnytime}
           className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-black/70 text-white font-semibold border border-white/20 hover:bg-black/85"
@@ -267,7 +267,6 @@ const GameApp: React.FC = () => {
           ← Mapa
         </button>
       )}
-
       <div className="fixed top-4 left-4 z-50">
         <button
           onClick={() => setShowCloudPanel((prev) => !prev)}
