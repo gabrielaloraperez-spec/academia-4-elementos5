@@ -154,3 +154,17 @@ VITE_FIREBASE_DATABASE_URL=https://mi-proyecto-default-rtdb.firebaseio.com
 ```
 
 3. Reinicia `pnpm dev` o vuelve a desplegar para que Vite tome las variables.
+
+
+
+### Vercel (producción): activar nube
+En Vercel puedes usar variables protegidas con *secrets* y mapearlas en `vercel.json`:
+
+```json
+"env": {
+  "VITE_FIREBASE_API_KEY": "@vite_firebase_api_key",
+  "VITE_FIREBASE_DATABASE_URL": "@vite_firebase_database_url"
+}
+```
+
+Crea los secrets en Vercel (CLI o dashboard) y vuelve a desplegar.
