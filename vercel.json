@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd academia-4-elementos5/academia-cuatro-elementos && npm ci",
-  "buildCommand": "cd academia-4-elementos5/academia-cuatro-elementos && npm run build",
+  "installCommand": "cd academia-4-elementos5/academia-cuatro-elementos && corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --no-frozen-lockfile",
+  "buildCommand": "cd academia-4-elementos5/academia-cuatro-elementos && corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm run build",
   "outputDirectory": "academia-4-elementos5/academia-cuatro-elementos/dist",
   "rewrites": [
     {
