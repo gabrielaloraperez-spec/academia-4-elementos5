@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd academia-4-elementos5/academia-cuatro-elementos && npm install",
-  "buildCommand": "cd academia-4-elementos5/academia-cuatro-elementos && npm run build",
-  "outputDirectory": "academia-4-elementos5/academia-cuatro-elementos/dist",
+  "installCommand": "if [ -d academia-4-elementos5/academia-cuatro-elementos ]; then cd academia-4-elementos5/academia-cuatro-elementos; fi; npm install",
+  "buildCommand": "if [ -d academia-4-elementos5/academia-cuatro-elementos ]; then cd academia-4-elementos5/academia-cuatro-elementos; fi; npm run build",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
