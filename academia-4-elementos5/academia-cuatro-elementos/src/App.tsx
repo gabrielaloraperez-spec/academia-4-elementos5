@@ -56,7 +56,7 @@ const GameApp: React.FC = () => {
       const session = getAuthSession();
 
       if (!session) {
-        await clearLocalProgress();
+        await clearLocalProgress().catch(() => undefined);
         if (!mounted) return;
         resetGame();
         setCurrentScreen('welcome');
@@ -213,7 +213,7 @@ const GameApp: React.FC = () => {
   };
 
   const handleRestartFromBeginning = async () => {
-    await clearLocalProgress();
+    await clearLocalProgress().catch(() => undefined);
     resetGame();
     setCurrentScreen('welcome');
     setCurrentLevelId(0);

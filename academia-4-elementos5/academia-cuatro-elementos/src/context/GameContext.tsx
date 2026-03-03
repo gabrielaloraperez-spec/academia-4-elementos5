@@ -28,8 +28,27 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return;
       }
 
-      setState(normalizeGameState(source));
-      hydratedRef.current = true;
+      try {
+        const savedIndexed = await loadGameStateFromIndexedDb();
+        const legacySaved = localStorage.getItem('academiaGameState');
+        const legacyParsed = legacySaved ? JSON.parse(legacySaved) : null;
+        const source = savedIndexed?.data ?? legacyParsed;
+
+        if (!mounted || !source) {
+          hydratedRef.current = true;
+          return;
+        }
+
+        setState(normalizeGameState(source));
+      } catch {
+        const legacySaved = localStorage.getItem('academiaGameState');
+        const legacyParsed = legacySaved ? JSON.parse(legacySaved) : null;
+        if (mounted && legacyParsed) {
+          setState(normalizeGameState(legacyParsed));
+        }
+      } finally {
+        hydratedRef.current = true;
+      }
     };
 
     void hydrate();
@@ -47,7 +66,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     localStorage.setItem('academiaGameState', JSON.stringify(state));
-    void saveGameStateToIndexedDb(state);
+    void saveGameStateToIndexedDb(state).catch(() => undefined);
   }, [state]);
 
   const checkAchievements = (newState: GameState) => {
