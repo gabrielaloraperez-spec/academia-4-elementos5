@@ -40,6 +40,8 @@ export interface GameContextType {
   completeBoss: (timeRemaining: number) => void;
   completeKnowledgeRoom: () => void;
   setPlayerInfo: (name: string, avatar: string) => void;
+  resetGame: () => void;
+  restoreGame: (snapshot: Partial<GameState>) => void;
   getCurrentLevelData: () => import('../data/gameData').Level | null;
   getAbilityData: (abilityId: string) => import('../data/gameData').Ability | undefined;
   getLevelStats: (levelId: number) => LevelStats;
