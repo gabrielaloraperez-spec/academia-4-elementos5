@@ -15,11 +15,13 @@ import {
   loadAppSessionFromIndexedDb,
   loadGameStateFromIndexedDb,
   saveAppSessionToIndexedDb,
+  clearLocalProgress,
   AppSessionState,
 } from './lib/persistence';
 import {
   getAuthSession,
   isCloudSyncConfigured,
+  isCloudProgressConfigured,
   loginWithEmail,
   logoutCloud,
   pullCloudProgress,
@@ -30,7 +32,7 @@ import {
 type Screen = 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
 
 const GameApp: React.FC = () => {
-  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel, setPlayerInfo } = useGame();
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel, setPlayerInfo, resetGame } = useGame();
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [currentLevelId, setCurrentLevelId] = useState<number>(0);
   const [gameOverScore, setGameOverScore] = useState<number>(0);
@@ -91,7 +93,7 @@ const GameApp: React.FC = () => {
 
   useEffect(() => {
     const syncCloud = async () => {
-      if (!navigator.onLine || !isCloudSyncConfigured() || !getAuthSession() || !state.playerName) return;
+      if (!navigator.onLine || !isCloudProgressConfigured() || !getAuthSession() || !state.playerName) return;
 
       const persistedGame = await loadGameStateFromIndexedDb();
       const appSession = await loadAppSessionFromIndexedDb();
@@ -113,7 +115,7 @@ const GameApp: React.FC = () => {
     setCloudError('');
     try {
       if (!isCloudSyncConfigured()) {
-        setCloudError('Configura VITE_FIREBASE_API_KEY y VITE_FIREBASE_DATABASE_URL para activar nube.');
+        setCloudError('Configura VITE_FIREBASE_API_KEY para activar el login en nube.');
         return;
       }
 
@@ -192,6 +194,19 @@ const GameApp: React.FC = () => {
 
   const handleMenu = () => {
     setCurrentScreen('map');
+  };
+
+  const handleRestartFromBeginning = async () => {
+    await clearLocalProgress();
+    resetGame();
+    setCurrentScreen('welcome');
+    setCurrentLevelId(0);
+    setGameOverScore(0);
+    setIsBossGameOver(false);
+    setChallengeLevelId(0);
+    setPendingPerfectChallenge(false);
+    setCloudError('');
+    setShowCloudPanel(false);
   };
 
   const getCurrentLevel = () => {
@@ -280,6 +295,7 @@ const GameApp: React.FC = () => {
         {showCloudPanel && (
           <div className="mt-2 w-72 bg-slate-900/95 border border-white/20 rounded-xl p-3 text-white text-sm space-y-2">
             <p>Estado: {cloudStatus}</p>
+            <button className="w-full px-2 py-1 rounded bg-amber-600" onClick={() => void handleRestartFromBeginning()}>Reiniciar desde el inicio</button>
             {cloudSyncAt > 0 && <p className="text-xs text-white/70">Última sync: {new Date(cloudSyncAt).toLocaleTimeString()}</p>}
             {!authSession ? (
               <>

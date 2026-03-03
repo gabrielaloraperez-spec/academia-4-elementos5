@@ -251,6 +251,11 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
 
+
+  const resetGame = () => {
+    setState(initialState);
+  };
+
   const setPlayerInfo = (name: string, avatar: string) => {
     setState(prev => ({
       ...prev,
@@ -294,6 +299,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       completeBoss,
       completeKnowledgeRoom,
       setPlayerInfo,
+      resetGame,
       getCurrentLevelData,
       getAbilityData,
       getLevelStats,
