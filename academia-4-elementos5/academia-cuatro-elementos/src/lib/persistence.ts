@@ -47,6 +47,17 @@ async function putValue<T>(key: string, value: T): Promise<void> {
   db.close();
 }
 
+async function deleteValue(key: string): Promise<void> {
+  const db = await openDb();
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).delete(key);
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
+
 async function getValue<T>(key: string): Promise<T | null> {
   const db = await openDb();
   const result = await new Promise<T | null>((resolve, reject) => {
@@ -73,4 +84,12 @@ export async function saveAppSessionToIndexedDb(session: Omit<AppSessionState, '
 
 export async function loadAppSessionFromIndexedDb(): Promise<AppSessionState | null> {
   return getValue<AppSessionState>(APP_SESSION_KEY);
+}
+
+export async function clearLocalProgress(): Promise<void> {
+  localStorage.removeItem('academiaGameState');
+  await Promise.all([
+    deleteValue(GAME_STATE_KEY),
+    deleteValue(APP_SESSION_KEY),
+  ]);
 }

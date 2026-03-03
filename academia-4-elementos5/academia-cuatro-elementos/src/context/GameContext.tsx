@@ -2,6 +2,7 @@ import React, { useState, useEffect, ReactNode, useRef } from 'react';
 import { levels, abilities, SCORING } from '../data/gameData';
 import { GameContext, GameState, initialState } from './gameConstants';
 import { loadGameStateFromIndexedDb, saveGameStateToIndexedDb } from '../lib/persistence';
+import { getAuthSession } from '../lib/cloudSync';
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, setState] = useState<GameState>(initialState);
@@ -11,23 +12,33 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     let mounted = true;
 
     const hydrate = async () => {
-      const savedIndexed = await loadGameStateFromIndexedDb();
-      const legacySaved = localStorage.getItem('academiaGameState');
-      const legacyParsed = legacySaved ? JSON.parse(legacySaved) : null;
-      const source = savedIndexed?.data ?? legacyParsed;
-
-      if (!mounted || !source) {
+      const session = getAuthSession();
+      if (!session) {
         hydratedRef.current = true;
         return;
       }
 
-      setState({
-        ...initialState,
-        ...source,
-        abilityUses: { ...initialState.abilityUses, ...(source.abilityUses || {}) },
-        operationMastery: { ...initialState.operationMastery, ...(source.operationMastery || {}) },
-      });
-      hydratedRef.current = true;
+      try {
+        const savedIndexed = await loadGameStateFromIndexedDb();
+        const legacySaved = localStorage.getItem('academiaGameState');
+        const legacyParsed = legacySaved ? JSON.parse(legacySaved) : null;
+        const source = savedIndexed?.data ?? legacyParsed;
+
+        if (!mounted || !source) {
+          hydratedRef.current = true;
+          return;
+        }
+
+        setState(normalizeGameState(source));
+      } catch {
+        const legacySaved = localStorage.getItem('academiaGameState');
+        const legacyParsed = legacySaved ? JSON.parse(legacySaved) : null;
+        if (mounted && legacyParsed) {
+          setState(normalizeGameState(legacyParsed));
+        }
+      } finally {
+        hydratedRef.current = true;
+      }
     };
 
     void hydrate();
@@ -38,8 +49,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     if (!hydratedRef.current) return;
+
+    if (!getAuthSession()) {
+      localStorage.removeItem('academiaGameState');
+      return;
+    }
+
     localStorage.setItem('academiaGameState', JSON.stringify(state));
-    void saveGameStateToIndexedDb(state);
+    void saveGameStateToIndexedDb(state).catch(() => undefined);
   }, [state]);
 
   const checkAchievements = (newState: GameState) => {
@@ -251,6 +268,21 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
 
+  const normalizeGameState = (snapshot: Partial<GameState>): GameState => ({
+    ...initialState,
+    ...snapshot,
+    abilityUses: { ...initialState.abilityUses, ...(snapshot.abilityUses || {}) },
+    operationMastery: { ...initialState.operationMastery, ...(snapshot.operationMastery || {}) },
+  });
+
+  const restoreGame = (snapshot: Partial<GameState>) => {
+    setState(normalizeGameState(snapshot));
+  };
+
+  const resetGame = () => {
+    setState(initialState);
+  };
+
   const setPlayerInfo = (name: string, avatar: string) => {
     setState(prev => ({
       ...prev,
@@ -294,6 +326,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       completeBoss,
       completeKnowledgeRoom,
       setPlayerInfo,
+      resetGame,
+      restoreGame,
       getCurrentLevelData,
       getAbilityData,
       getLevelStats,
