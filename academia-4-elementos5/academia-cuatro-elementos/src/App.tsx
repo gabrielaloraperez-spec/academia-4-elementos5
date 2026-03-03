@@ -15,6 +15,7 @@ import {
   loadAppSessionFromIndexedDb,
   loadGameStateFromIndexedDb,
   saveAppSessionToIndexedDb,
+  saveGameStateToIndexedDb,
   clearLocalProgress,
   AppSessionState,
 } from './lib/persistence';
@@ -140,7 +141,43 @@ const GameApp: React.FC = () => {
         await registerWithEmail(cloudEmail, cloudPassword);
       }
 
-      const cloudData = await pullCloudProgress();
+      let cloudData = await pullCloudProgress();
+
+      if (!cloudData) {
+        const now = Date.now();
+        const fallbackSession: AppSessionState = {
+          currentScreen: state.playerName ? currentScreen : 'welcome',
+          currentLevelId,
+          gameOverScore,
+          isBossGameOver,
+          challengeLevelId,
+          pendingPerfectChallenge,
+          updatedAt: now,
+        };
+
+        cloudData = {
+          game: {
+            data: state,
+            updatedAt: now,
+          },
+          appSession: fallbackSession,
+          lastSyncAt: now,
+        };
+
+        await Promise.all([
+          pushCloudProgress(cloudData),
+          saveGameStateToIndexedDb(cloudData.game.data),
+          saveAppSessionToIndexedDb({
+            currentScreen: fallbackSession.currentScreen,
+            currentLevelId: fallbackSession.currentLevelId,
+            gameOverScore: fallbackSession.gameOverScore,
+            isBossGameOver: fallbackSession.isBossGameOver,
+            challengeLevelId: fallbackSession.challengeLevelId,
+            pendingPerfectChallenge: fallbackSession.pendingPerfectChallenge,
+          }),
+        ]);
+      }
+
       if (cloudData?.game?.data) {
         restoreGame(cloudData.game.data);
       }
