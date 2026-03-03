@@ -32,7 +32,7 @@ import {
 type Screen = 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
 
 const GameApp: React.FC = () => {
-  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel, setPlayerInfo, resetGame } = useGame();
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel, resetGame, restoreGame } = useGame();
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [currentLevelId, setCurrentLevelId] = useState<number>(0);
   const [gameOverScore, setGameOverScore] = useState<number>(0);
@@ -53,6 +53,21 @@ const GameApp: React.FC = () => {
     let mounted = true;
 
     const restoreSession = async () => {
+      const session = getAuthSession();
+
+      if (!session) {
+        await clearLocalProgress();
+        if (!mounted) return;
+        resetGame();
+        setCurrentScreen('welcome');
+        setCurrentLevelId(0);
+        setGameOverScore(0);
+        setIsBossGameOver(false);
+        setChallengeLevelId(0);
+        setPendingPerfectChallenge(false);
+        return;
+      }
+
       const savedSession = await loadAppSessionFromIndexedDb();
       if (!mounted || !savedSession) return;
 
@@ -68,7 +83,7 @@ const GameApp: React.FC = () => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [resetGame]);
 
   useEffect(() => {
     if (state.playerName && currentScreen === 'welcome') {
@@ -126,8 +141,8 @@ const GameApp: React.FC = () => {
       }
 
       const cloudData = await pullCloudProgress();
-      if (cloudData?.game?.data?.playerName) {
-        setPlayerInfo(cloudData.game.data.playerName, cloudData.game.data.avatar || '🧙');
+      if (cloudData?.game?.data) {
+        restoreGame(cloudData.game.data);
       }
 
       if (cloudData?.appSession) {
@@ -146,9 +161,10 @@ const GameApp: React.FC = () => {
     }
   };
 
-  const handleCloudLogout = () => {
+  const handleCloudLogout = async () => {
     logoutCloud();
     setCloudStatus('Local');
+    await handleRestartFromBeginning();
   };
 
   const handleStartLevel = (levelId: number) => {

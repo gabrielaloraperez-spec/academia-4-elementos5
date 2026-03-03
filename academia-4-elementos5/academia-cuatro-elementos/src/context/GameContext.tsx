@@ -21,12 +21,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return;
       }
 
-      setState({
-        ...initialState,
-        ...source,
-        abilityUses: { ...initialState.abilityUses, ...(source.abilityUses || {}) },
-        operationMastery: { ...initialState.operationMastery, ...(source.operationMastery || {}) },
-      });
+      setState(normalizeGameState(source));
       hydratedRef.current = true;
     };
 
@@ -251,6 +246,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
 
+  const normalizeGameState = (snapshot: Partial<GameState>): GameState => ({
+    ...initialState,
+    ...snapshot,
+    abilityUses: { ...initialState.abilityUses, ...(snapshot.abilityUses || {}) },
+    operationMastery: { ...initialState.operationMastery, ...(snapshot.operationMastery || {}) },
+  });
+
+  const restoreGame = (snapshot: Partial<GameState>) => {
+    setState(normalizeGameState(snapshot));
+  };
 
   const resetGame = () => {
     setState(initialState);
@@ -300,6 +305,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       completeKnowledgeRoom,
       setPlayerInfo,
       resetGame,
+      restoreGame,
       getCurrentLevelData,
       getAbilityData,
       getLevelStats,
