@@ -92,7 +92,7 @@ const GameApp: React.FC = () => {
   }, [state.playerName, currentScreen]);
 
   useEffect(() => {
-    if (!state.playerName) return;
+    if (!state.playerName || !authSession) return;
 
     const session: Omit<AppSessionState, 'updatedAt'> = {
       currentScreen,
@@ -104,7 +104,7 @@ const GameApp: React.FC = () => {
     };
 
     void saveAppSessionToIndexedDb(session);
-  }, [state.playerName, currentScreen, currentLevelId, gameOverScore, isBossGameOver, challengeLevelId, pendingPerfectChallenge]);
+  }, [authSession, state.playerName, currentScreen, currentLevelId, gameOverScore, isBossGameOver, challengeLevelId, pendingPerfectChallenge]);
 
   useEffect(() => {
     const syncCloud = async () => {
