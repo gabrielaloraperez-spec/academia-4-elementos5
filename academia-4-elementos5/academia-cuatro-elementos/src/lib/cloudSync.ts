@@ -13,6 +13,11 @@ const AUTH_KEY = 'academiaCloudAuth';
 
 export function isCloudSyncConfigured(): boolean {
   const apiKey = API_KEY?.trim() ?? '';
+  return apiKey.length > 10 && !apiKey.includes('REPLACE_WITH');
+}
+
+export function isCloudProgressConfigured(): boolean {
+  const apiKey = API_KEY?.trim() ?? '';
   const dbUrl = DB_URL?.trim() ?? '';
   const hasRealApiKey = apiKey.length > 10 && !apiKey.includes('REPLACE_WITH');
   const hasSupportedDomain = dbUrl.includes('firebaseio.com') || dbUrl.includes('firebasedatabase.app');
@@ -87,7 +92,7 @@ function getUserEndpoint(session: AuthSession): string {
 
 export async function pushCloudProgress(payload: CloudPayload): Promise<void> {
   const session = getAuthSession();
-  if (!isCloudSyncConfigured() || !session) return;
+  if (!isCloudProgressConfigured() || !session) return;
 
   const response = await fetch(getUserEndpoint(session), {
     method: 'PUT',
@@ -104,7 +109,7 @@ export async function pushCloudProgress(payload: CloudPayload): Promise<void> {
 
 export async function pullCloudProgress(): Promise<CloudPayload | null> {
   const session = getAuthSession();
-  if (!isCloudSyncConfigured() || !session) return null;
+  if (!isCloudProgressConfigured() || !session) return null;
 
   const response = await fetch(getUserEndpoint(session));
   if (!response.ok) return null;
