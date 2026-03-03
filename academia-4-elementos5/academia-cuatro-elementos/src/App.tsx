@@ -83,7 +83,7 @@ const GameApp: React.FC = () => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [resetGame]);
 
   useEffect(() => {
     if (state.playerName && currentScreen === 'welcome') {

@@ -18,6 +18,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return;
       }
 
+      const savedIndexed = await loadGameStateFromIndexedDb();
+      const legacySaved = localStorage.getItem('academiaGameState');
+      const legacyParsed = legacySaved ? JSON.parse(legacySaved) : null;
+      const source = savedIndexed?.data ?? legacyParsed;
+
+      if (!mounted || !source) {
+        hydratedRef.current = true;
+        return;
+      }
+
       try {
         const savedIndexed = await loadGameStateFromIndexedDb();
         const legacySaved = localStorage.getItem('academiaGameState');
