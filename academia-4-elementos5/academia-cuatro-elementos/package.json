@@ -82,5 +82,6 @@
     "vite": "^6.0.1",
     "vite-plugin-pwa": "^1.2.0",
     "vite-plugin-source-identifier": "1.1.2"
-  }
+  },
+  "packageManager": "pnpm@10.13.1"
 }
