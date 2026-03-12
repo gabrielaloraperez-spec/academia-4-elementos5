@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Level, Problem } from '../data/gameData';
-import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
 
 interface DomainChallengeScreenProps {
   level: Level | null;
