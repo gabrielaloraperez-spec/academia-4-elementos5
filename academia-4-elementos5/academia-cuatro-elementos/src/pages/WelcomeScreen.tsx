@@ -62,7 +62,7 @@ export const WelcomeScreen: React.FC = () => {
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-indigo-950 to-sky-950 flex items-center justify-center p-4">
         <div className="w-full max-w-3xl text-center">
           <div className="mx-auto mb-8 h-44 w-44 rounded-full border border-cyan-300/40 bg-gradient-to-br from-red-500/20 via-sky-500/20 to-emerald-400/20 shadow-[0_0_80px_rgba(56,189,248,0.3)] flex items-center justify-center overflow-hidden">
-            <img src="/icon-192.png" alt="Academia de los Cuatro Elementos" className="h-28 w-28 object-contain" />
+            <img src="/assets/icons/icon-192.png" alt="Academia de los Cuatro Elementos" className="h-28 w-28 object-contain" />
           </div>
 
 

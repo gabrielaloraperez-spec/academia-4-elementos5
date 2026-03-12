@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Level } from '../data/gameData';
-import { AbilityButton, ManaBar } from '../components/GameComponents';
+import { AbilityButton, ManaBar } from '../components/game/GameComponents';
 import { useGame } from '../context/useGame';
-import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
 
 interface KnowledgeRoomProps {
   level: Level;
