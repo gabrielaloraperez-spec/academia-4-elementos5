@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Level } from '../data/gameData';
-import { AbilityButton, ManaBar } from '../components/GameComponents';
+import { AbilityButton, ManaBar } from '../components/game/GameComponents';
 import { useGame } from '../context/useGame';
-import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
 
 interface KnowledgeRoomProps {
   level: Level;
@@ -118,7 +118,7 @@ export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete 
   }, [showResult, question, hiddenWrongIndexes]);
 
   return (
-    <div className="min-h-screen p-4 flex items-center justify-center" style={{ backgroundColor: level.bgColor }}>
+    <div className="min-h-screen w-full bg-cover bg-center p-4 flex items-center justify-center" style={{ backgroundImage: "linear-gradient(rgba(120,53,15,0.55), rgba(146,64,14,0.45)), url(/assets/backgrounds/knowledge-room.svg)" }}>
       <div className="max-w-lg w-full">
         <div className="text-center mb-6">
           <div className="text-5xl mb-3">📜</div>

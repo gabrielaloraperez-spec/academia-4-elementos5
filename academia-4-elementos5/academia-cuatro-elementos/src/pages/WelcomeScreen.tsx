@@ -59,10 +59,10 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'cover') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-indigo-950 to-sky-950 flex items-center justify-center p-4">
+      <div className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4" style={{ backgroundImage: "linear-gradient(rgba(2,6,23,0.66), rgba(30,41,59,0.7)), url(/assets/backgrounds/welcome-bg.svg)" }}>
         <div className="w-full max-w-3xl text-center">
           <div className="mx-auto mb-8 h-44 w-44 rounded-full border border-cyan-300/40 bg-gradient-to-br from-red-500/20 via-sky-500/20 to-emerald-400/20 shadow-[0_0_80px_rgba(56,189,248,0.3)] flex items-center justify-center overflow-hidden">
-            <img src="/icon-192.png" alt="Academia de los Cuatro Elementos" className="h-28 w-28 object-contain" />
+            <img src="/assets/icons/icon-192.png" alt="Academia de los Cuatro Elementos" className="h-28 w-28 object-contain" />
           </div>
 
 
@@ -87,7 +87,7 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'story') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-violet-900 to-indigo-950 flex items-center justify-center p-4">
+      <div className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4" style={{ backgroundImage: "linear-gradient(rgba(30,27,75,0.72), rgba(49,46,129,0.72)), url(/assets/backgrounds/welcome-bg.svg)" }}>
         <div className="w-full max-w-3xl bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-6 md:p-10 shadow-2xl">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white text-center mb-8">
             Crónica de la Academia
@@ -115,7 +115,7 @@ export const WelcomeScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-indigo-800 flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4" style={{ backgroundImage: "linear-gradient(rgba(49,46,129,0.72), rgba(88,28,135,0.72)), url(/assets/backgrounds/welcome-bg.svg)" }}>
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-2" style={{ fontFamily: 'serif' }}>

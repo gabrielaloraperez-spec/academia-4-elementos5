@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../context/useGame';
 import { Level } from '../data/gameData';
-import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/GameComponents';
-import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
+import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/game/GameComponents';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
+import { getKingdomTheme } from '../styles/kingdomThemes';
 
 interface LevelScreenProps {
   level: Level;
@@ -64,6 +65,7 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
   }, [level.operation]);
 
   const problem = level.problems[currentProblem];
+  const kingdomTheme = getKingdomTheme(level.operation);
   const sublevel = sublevels[currentSublevel];
 
   const handleSublevelFailure = () => {
@@ -215,7 +217,7 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
 
   if (gameOverConfig) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: level.bgColor }}>
+      <div className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.58), rgba(15,23,42,0.4)), url(${kingdomTheme.background})` }}>
         <div className="max-w-xl w-full bg-white rounded-3xl p-8 text-center shadow-2xl border-2" style={{ borderColor: level.color }}>
           <div className="text-6xl mb-4">💫</div>
           <h2 className="text-3xl font-bold mb-3" style={{ color: level.color }}>Game Over</h2>
@@ -234,7 +236,7 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
 
   if (showTransition) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: level.bgColor }}>
+      <div className="min-h-screen w-full bg-cover bg-center flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.58), rgba(15,23,42,0.4)), url(${kingdomTheme.background})` }}>
         <div className="max-w-xl w-full rounded-3xl p-8 text-center shadow-2xl bg-white">
           <div className="text-6xl mb-4">{level.icon}</div>
           <h2 className="text-3xl font-bold mb-1" style={{ color: level.color }}>{level.name}</h2>
@@ -254,7 +256,7 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: level.bgColor }}>
+    <div className="min-h-screen w-full bg-cover bg-center flex flex-col" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.58), rgba(15,23,42,0.4)), url(${kingdomTheme.background})` }}>
       <div className="p-4">
         <div className="max-w-md mx-auto">
           <div className="flex items-center justify-between mb-4">
