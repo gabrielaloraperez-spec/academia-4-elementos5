@@ -59,26 +59,17 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'cover') {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: "linear-gradient(rgba(2,6,23,0.35), rgba(30,41,59,0.4)), url(/assets/backgrounds/WelcomeBG.png), url(/assets/backgrounds/welcome-bg.png), url(/assets/backgrounds/welcome-bg.svg)" }}>
-        <div className="w-full max-w-3xl text-center">
-          <div className="mx-auto mb-8 h-44 w-44 rounded-full border border-cyan-300/40 bg-gradient-to-br from-red-500/20 via-sky-500/20 to-emerald-400/20 shadow-[0_0_80px_rgba(56,189,248,0.3)] flex items-center justify-center overflow-hidden">
-            <img src="/assets/icons/icon-192.png" alt="Academia de los Cuatro Elementos" className="h-28 w-28 object-contain" />
-          </div>
-
-
-          <h1 className="text-4xl md:text-6xl font-black text-white tracking-wide leading-tight">
-            ACADEMIA DE LOS CUATRO ELEMENTOS
-          </h1>
-
-          <p className="mt-5 text-lg md:text-xl text-cyan-100 max-w-2xl mx-auto">
-            “El equilibrio del mundo depende de quienes entienden el poder de los números.”
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-end justify-center p-4 md:p-8" style={{ backgroundImage: "linear-gradient(rgba(2,6,23,0.2), rgba(15,23,42,0.35)), url(/assets/backgrounds/welcome-bg.png), url(/assets/backgrounds/WelcomeBG.png), url(/assets/backgrounds/welcome-bg.svg)" }}>
+        <div className="w-full max-w-2xl text-center rounded-3xl border border-white/30 bg-slate-900/35 backdrop-blur-md p-6 md:p-8 shadow-2xl">
+          <p className="text-cyan-100 text-base md:text-lg leading-relaxed">
+            El equilibrio del mundo depende de quienes entienden el poder de los números.
           </p>
 
           <button
             onClick={() => setStep('story')}
-            className="mt-10 px-10 py-4 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 shadow-xl transition-all duration-300 hover:scale-[1.02]"
+            className="mt-6 px-10 py-4 rounded-2xl text-lg font-bold text-white bg-white/20 hover:bg-white/30 border border-white/40 shadow-xl transition-all duration-300"
           >
-            Comenzar
+            Comenzar aventura
           </button>
         </div>
       </div>
@@ -87,7 +78,7 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'story') {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: "linear-gradient(rgba(30,27,75,0.4), rgba(49,46,129,0.45)), url(/assets/backgrounds/WelcomeBG.png), url(/assets/backgrounds/welcome-bg.png), url(/assets/backgrounds/welcome-bg.svg)" }}>
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: "linear-gradient(rgba(30,27,75,0.32), rgba(49,46,129,0.4)), url(/assets/backgrounds/welcome-bg.png), url(/assets/backgrounds/WelcomeBG.png), url(/assets/backgrounds/welcome-bg.svg)" }}>
         <div className="w-full max-w-3xl bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-6 md:p-10 shadow-2xl">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white text-center mb-8">
             Crónica de la Academia
@@ -104,7 +95,7 @@ export const WelcomeScreen: React.FC = () => {
           <div className="text-center mt-8">
             <button
               onClick={() => setStep('profile')}
-              className="px-10 py-4 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 shadow-xl transition-all duration-300 hover:scale-[1.02]"
+              className="px-10 py-4 rounded-2xl text-lg font-bold text-white bg-white/20 hover:bg-white/30 border border-white/40 shadow-xl transition-all duration-300"
             >
               Elegir mi Avatar
             </button>
@@ -115,19 +106,13 @@ export const WelcomeScreen: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: "linear-gradient(rgba(49,46,129,0.4), rgba(88,28,135,0.45)), url(/assets/backgrounds/WelcomeBG.png), url(/assets/backgrounds/welcome-bg.png), url(/assets/backgrounds/welcome-bg.svg)" }}>
+    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: "linear-gradient(rgba(49,46,129,0.34), rgba(88,28,135,0.4)), url(/assets/backgrounds/welcome-bg.png), url(/assets/backgrounds/WelcomeBG.png), url(/assets/backgrounds/welcome-bg.svg)" }}>
       <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2" style={{ fontFamily: 'serif' }}>
-            Academia de los
-          </h1>
-          <h1 className="text-4xl md:text-5xl font-bold text-amber-400" style={{ fontFamily: 'serif' }}>
-            Cuatro Elementos
-          </h1>
-          <div className="text-6xl mt-4">{selectedAvatar}</div>
+        <div className="text-center mb-6">
+          <div className="text-6xl mt-2">{selectedAvatar}</div>
         </div>
 
-        <div className="bg-white rounded-3xl p-6 shadow-2xl">
+        <div className="bg-white/92 backdrop-blur rounded-3xl p-6 shadow-2xl border border-white/60">
           <h2 className="text-xl font-bold text-gray-800 text-center mb-6">
             ⚔️ Tu iniciación final, {guardianLabel} ⚔️
           </h2>
@@ -175,7 +160,7 @@ export const WelcomeScreen: React.FC = () => {
             className={`
               w-full py-4 rounded-xl text-xl font-bold text-white transition-all duration-300
               ${name.trim()
-                ? 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 hover:scale-105 shadow-lg'
+                ? 'bg-slate-800 hover:bg-slate-900 shadow-lg'
                 : 'bg-gray-300 cursor-not-allowed'
               }
             `}
