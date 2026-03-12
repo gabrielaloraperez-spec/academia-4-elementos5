@@ -118,7 +118,7 @@ export const KnowledgeRoom: React.FC<KnowledgeRoomProps> = ({ level, onComplete 
   }, [showResult, question, hiddenWrongIndexes]);
 
   return (
-    <div className="min-h-screen w-full bg-cover bg-center p-4 flex items-center justify-center" style={{ backgroundImage: "linear-gradient(rgba(120,53,15,0.55), rgba(146,64,14,0.45)), url(/assets/backgrounds/knowledge-room.png), url(/assets/backgrounds/knowledge-room.svg)" }}>
+    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat p-4 flex items-center justify-center" style={{ backgroundImage: "linear-gradient(rgba(120,53,15,0.55), rgba(146,64,14,0.45)), url(/assets/backgrounds/knowledge-room.png), url(/assets/backgrounds/knowledge-room.svg)" }}>
       <div className="max-w-lg w-full">
         <div className="text-center mb-6">
           <div className="text-5xl mb-3">📜</div>
