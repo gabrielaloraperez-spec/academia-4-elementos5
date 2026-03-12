@@ -30,7 +30,7 @@ import {
 type Screen = 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
 
 const GameApp: React.FC = () => {
-  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel } = useGame();
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel, setPlayerInfo } = useGame();
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [currentLevelId, setCurrentLevelId] = useState<number>(0);
   const [gameOverScore, setGameOverScore] = useState<number>(0);
@@ -69,13 +69,13 @@ const GameApp: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (gameState.playerName && currentScreen === 'welcome') {
+    if (state.playerName && currentScreen === 'welcome') {
       setCurrentScreen('map');
     }
-  }, [gameState.playerName, currentScreen]);
+  }, [state.playerName, currentScreen]);
 
   useEffect(() => {
-    if (!gameState.playerName) return;
+    if (!state.playerName) return;
 
     const session: Omit<AppSessionState, 'updatedAt'> = {
       currentScreen,
@@ -87,11 +87,11 @@ const GameApp: React.FC = () => {
     };
 
     void saveAppSessionToIndexedDb(session);
-  }, [gameState.playerName, currentScreen, currentLevelId, gameOverScore, isBossGameOver, challengeLevelId, pendingPerfectChallenge]);
+  }, [state.playerName, currentScreen, currentLevelId, gameOverScore, isBossGameOver, challengeLevelId, pendingPerfectChallenge]);
 
   useEffect(() => {
     const syncCloud = async () => {
-      if (!navigator.onLine || !isCloudSyncConfigured() || !getAuthSession() || !gameState.playerName) return;
+      if (!navigator.onLine || !isCloudSyncConfigured() || !getAuthSession() || !state.playerName) return;
 
       const persistedGame = await loadGameStateFromIndexedDb();
       const appSession = await loadAppSessionFromIndexedDb();
@@ -107,7 +107,7 @@ const GameApp: React.FC = () => {
     };
 
     void syncCloud();
-  }, [gameState]);
+  }, [state]);
 
   const handleCloudLogin = async (mode: 'login' | 'register') => {
     setCloudError('');
@@ -125,7 +125,7 @@ const GameApp: React.FC = () => {
 
       const cloudData = await pullCloudProgress();
       if (cloudData?.game?.data?.playerName) {
-        gameSetPlayerInfo(cloudData.game.data.playerName, cloudData.game.data.avatar || '🧙');
+        setPlayerInfo(cloudData.game.data.playerName, cloudData.game.data.avatar || '🧙');
       }
 
       if (cloudData?.appSession) {
@@ -150,7 +150,7 @@ const GameApp: React.FC = () => {
   };
 
   const handleStartLevel = (levelId: number) => {
-    gameStartLevel(levelId);
+    startLevel(levelId);
     setCurrentLevelId(levelId);
     setCurrentScreen('level');
   };
@@ -171,12 +171,12 @@ const GameApp: React.FC = () => {
   };
 
   const handleBossComplete = (timeRemaining: number = 0) => {
-    gameCompleteBoss(timeRemaining);
+    completeBoss(timeRemaining);
     setCurrentScreen('map');
   };
 
   const handleGameOver = (isBoss: boolean = false) => {
-    setGameOverScore(gameState.score);
+    setGameOverScore(state.score);
     setIsBossGameOver(isBoss);
     setCurrentScreen('gameover');
   };
@@ -185,7 +185,7 @@ const GameApp: React.FC = () => {
     if (isBossGameOver) {
       setCurrentScreen('boss');
     } else {
-      gameResetLevel();
+      resetLevel();
       setCurrentScreen('level');
     }
   };
@@ -219,7 +219,7 @@ const GameApp: React.FC = () => {
             onComplete={handleLevelComplete}
             onKnowledge={() => setCurrentScreen('knowledge')}
             onExitToMap={() => {
-              gameResetLevel();
+              resetLevel();
               setCurrentScreen('map');
             }}
           />
@@ -231,11 +231,11 @@ const GameApp: React.FC = () => {
           <DomainChallengeScreen
             level={challengeLevel}
             onComplete={() => {
-              gameCompleteLevel(challengeLevelId, pendingPerfectChallenge);
+              completeLevel(challengeLevelId, pendingPerfectChallenge);
               setCurrentScreen('knowledge');
             }}
             onFail={() => {
-              gameResetLevel();
+              resetLevel();
               setCurrentLevelId(challengeLevelId);
               setCurrentScreen('level');
             }}
@@ -260,7 +260,6 @@ const GameApp: React.FC = () => {
     <div className="min-h-screen relative">
       {renderScreen()}
 
-      {gameState.playerName && currentScreen !== 'map' && (
       {state.playerName && currentScreen !== 'map' && (
         <button
           onClick={handleBackToMapAnytime}
