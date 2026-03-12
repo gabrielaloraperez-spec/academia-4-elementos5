@@ -1,0 +1,359 @@
+import React, { useEffect, useMemo } from 'react';
+import { GameProvider } from './context/GameContext';
+import { useGame } from './context/useGame';
+import {
+  WelcomeScreen,
+  MapScreen,
+  LevelScreen,
+  KnowledgeRoom,
+  BossScreen,
+  GameOverScreen,
+  DomainChallengeScreen
+} from './pages';
+import { levels } from './data/gameData';
+import { useGameState } from './hooks/useGameState';
+import {
+  loadAppSessionFromIndexedDb,
+  loadGameStateFromIndexedDb,
+  saveAppSessionToIndexedDb,
+  clearLocalProgress,
+  AppSessionState,
+} from './utils/persistence';
+import {
+  getAuthSession,
+  isCloudSyncConfigured,
+  isCloudProgressConfigured,
+  loginWithEmail,
+  logoutCloud,
+  pullCloudProgress,
+  pushCloudProgress,
+  registerWithEmail,
+} from './utils/cloudSync';
+
+const GameApp: React.FC = () => {
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel, resetGame, restoreGame } = useGame();
+  const {
+    currentScreen,
+    setCurrentScreen,
+    currentLevelId,
+    setCurrentLevelId,
+    gameOverScore,
+    setGameOverScore,
+    isBossGameOver,
+    setIsBossGameOver,
+    challengeLevelId,
+    setChallengeLevelId,
+    pendingPerfectChallenge,
+    setPendingPerfectChallenge,
+    cloudEmail,
+    setCloudEmail,
+    cloudPassword,
+    setCloudPassword,
+    cloudError,
+    setCloudError,
+    cloudStatus,
+    setCloudStatus,
+    cloudSyncAt,
+    setCloudSyncAt,
+    showCloudPanel,
+    setShowCloudPanel,
+    resetLocalUiState,
+  } = useGameState();
+
+  const authSession = useMemo(() => getAuthSession(), [cloudStatus]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const restoreSession = async () => {
+      const session = getAuthSession();
+
+      const savedSession = await loadAppSessionFromIndexedDb();
+      if (!mounted || !savedSession) return;
+
+      if (!session) {
+        // Local mode: keep current in-memory game defaults and only restore view state if present.
+        setCurrentScreen(savedSession.currentScreen);
+        setCurrentLevelId(savedSession.currentLevelId);
+        setGameOverScore(savedSession.gameOverScore);
+        setIsBossGameOver(savedSession.isBossGameOver);
+        setChallengeLevelId(savedSession.challengeLevelId);
+        setPendingPerfectChallenge(savedSession.pendingPerfectChallenge);
+        return;
+      }
+
+      setCurrentScreen(savedSession.currentScreen);
+      setCurrentLevelId(savedSession.currentLevelId);
+      setGameOverScore(savedSession.gameOverScore);
+      setIsBossGameOver(savedSession.isBossGameOver);
+      setChallengeLevelId(savedSession.challengeLevelId);
+      setPendingPerfectChallenge(savedSession.pendingPerfectChallenge);
+    };
+
+    void restoreSession();
+    return () => {
+      mounted = false;
+    };
+  }, [resetGame, resetLocalUiState]);
+
+  useEffect(() => {
+    if (state.playerName && currentScreen === 'welcome') {
+      setCurrentScreen('map');
+    }
+  }, [state.playerName, currentScreen]);
+
+  useEffect(() => {
+    if (!state.playerName || !authSession) return;
+
+    const session: Omit<AppSessionState, 'updatedAt'> = {
+      currentScreen,
+      currentLevelId,
+      gameOverScore,
+      isBossGameOver,
+      challengeLevelId,
+      pendingPerfectChallenge,
+    };
+
+    void saveAppSessionToIndexedDb(session);
+  }, [authSession, state.playerName, currentScreen, currentLevelId, gameOverScore, isBossGameOver, challengeLevelId, pendingPerfectChallenge]);
+
+  useEffect(() => {
+    const syncCloud = async () => {
+      if (!navigator.onLine || !isCloudProgressConfigured() || !getAuthSession() || !state.playerName) return;
+
+      const persistedGame = await loadGameStateFromIndexedDb();
+      const appSession = await loadAppSessionFromIndexedDb();
+      if (!persistedGame || !appSession) return;
+
+      await pushCloudProgress({
+        game: persistedGame,
+        appSession,
+        lastSyncAt: Date.now(),
+      });
+      setCloudStatus('Sincronizado');
+      setCloudSyncAt(Date.now());
+    };
+
+    void syncCloud();
+  }, [state]);
+
+  const handleCloudLogin = async (mode: 'login' | 'register') => {
+    setCloudError('');
+    try {
+      if (!isCloudSyncConfigured()) {
+        setCloudError('Configura VITE_FIREBASE_API_KEY para activar el login en nube.');
+        return;
+      }
+
+      if (mode === 'login') {
+        await loginWithEmail(cloudEmail, cloudPassword);
+      } else {
+        await registerWithEmail(cloudEmail, cloudPassword);
+      }
+
+      const cloudData = await pullCloudProgress();
+      if (cloudData?.game?.data) {
+        restoreGame(cloudData.game.data);
+      }
+
+      if (cloudData?.appSession) {
+        setCurrentScreen(cloudData.appSession.currentScreen);
+        setCurrentLevelId(cloudData.appSession.currentLevelId);
+        setGameOverScore(cloudData.appSession.gameOverScore);
+        setIsBossGameOver(cloudData.appSession.isBossGameOver);
+        setChallengeLevelId(cloudData.appSession.challengeLevelId);
+        setPendingPerfectChallenge(cloudData.appSession.pendingPerfectChallenge);
+      }
+
+      setCloudStatus('Conectado');
+      setShowCloudPanel(false);
+    } catch (error) {
+      setCloudError((error as Error).message);
+    }
+  };
+
+  const handleCloudLogout = async () => {
+    logoutCloud();
+    setCloudStatus('Local');
+    await handleRestartFromBeginning();
+  };
+
+  const handleStartLevel = (levelId: number) => {
+    startLevel(levelId);
+    setCurrentLevelId(levelId);
+    setCurrentScreen('level');
+  };
+
+  const handleLevelComplete = (wasPerfect: boolean = false) => {
+    setChallengeLevelId(currentLevelId);
+    setPendingPerfectChallenge(wasPerfect);
+    setCurrentScreen('domain_challenge');
+  };
+
+  const handleKnowledgeComplete = () => {
+    completeKnowledgeRoom();
+    setCurrentScreen('map');
+  };
+
+  const handleStartBoss = () => {
+    setCurrentScreen('boss');
+  };
+
+  const handleBossComplete = (timeRemaining: number = 0) => {
+    completeBoss(timeRemaining);
+    setCurrentScreen('map');
+  };
+
+  const handleGameOver = (isBoss: boolean = false) => {
+    setGameOverScore(state.score);
+    setIsBossGameOver(isBoss);
+    setCurrentScreen('gameover');
+  };
+
+  const handleRetry = () => {
+    if (isBossGameOver) {
+      setCurrentScreen('boss');
+    } else {
+      resetLevel();
+      setCurrentScreen('level');
+    }
+  };
+
+  const handleMenu = () => {
+    setCurrentScreen('map');
+  };
+
+  const handleRestartFromBeginning = async () => {
+    await clearLocalProgress().catch(() => undefined);
+    resetGame();
+    resetLocalUiState();
+  };
+
+  const getCurrentLevel = () => {
+    return levels.find(l => l.id === currentLevelId) || null;
+  };
+
+  const handleBackToMapAnytime = () => {
+    resetLevel();
+    setCurrentScreen('map');
+  };
+
+  // Render current screen
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'welcome':
+        return <WelcomeScreen />;
+      case 'map':
+        return <MapScreen onLevelSelect={handleStartLevel} onBossSelect={handleStartBoss} />;
+      case 'level': {
+        const level = getCurrentLevel();
+        if (!level) return <WelcomeScreen />;
+        return (
+          <LevelScreen
+            level={level}
+            onComplete={handleLevelComplete}
+            onKnowledge={() => setCurrentScreen('knowledge')}
+            onExitToMap={() => {
+              resetLevel();
+              setCurrentScreen('map');
+            }}
+          />
+        );
+      }
+      case 'domain_challenge': {
+        const challengeLevel = levels.find(l => l.id === challengeLevelId) || getCurrentLevel();
+        return (
+          <DomainChallengeScreen
+            level={challengeLevel}
+            onComplete={() => {
+              completeLevel(challengeLevelId, pendingPerfectChallenge);
+              setCurrentScreen('knowledge');
+            }}
+            onFail={() => {
+              resetLevel();
+              setCurrentLevelId(challengeLevelId);
+              setCurrentScreen('level');
+            }}
+          />
+        );
+      }
+      case 'knowledge': {
+        const knowledgeLevel = getCurrentLevel();
+        if (!knowledgeLevel) return <WelcomeScreen />;
+        return <KnowledgeRoom level={knowledgeLevel} onComplete={handleKnowledgeComplete} />;
+      }
+      case 'boss':
+        return <BossScreen onComplete={handleBossComplete} onGameOver={() => handleGameOver(true)} />;
+      case 'gameover':
+        return <GameOverScreen score={gameOverScore} onRetry={handleRetry} onMenu={handleMenu} isBoss={isBossGameOver} />;
+      default:
+        return <WelcomeScreen />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen relative">
+      {renderScreen()}
+
+      {state.playerName && currentScreen !== 'map' && (
+        <button
+          onClick={handleBackToMapAnytime}
+          className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-black/70 text-white font-semibold border border-white/20 hover:bg-black/85"
+        >
+          ← Mapa
+        </button>
+      )}
+
+      <div className="fixed top-4 left-4 z-50">
+        <button
+          onClick={() => setShowCloudPanel((prev) => !prev)}
+          className="px-3 py-2 rounded-xl bg-indigo-900/80 text-white text-sm border border-indigo-300/40"
+        >
+          ☁️ {authSession ? 'Nube conectada' : 'Login nube'}
+        </button>
+
+        {showCloudPanel && (
+          <div className="mt-2 w-72 bg-slate-900/95 border border-white/20 rounded-xl p-3 text-white text-sm space-y-2">
+            <p>Estado: {cloudStatus}</p>
+            <button className="w-full px-2 py-1 rounded bg-amber-600" onClick={() => void handleRestartFromBeginning()}>Reiniciar desde el inicio</button>
+            {cloudSyncAt > 0 && <p className="text-xs text-white/70">Última sync: {new Date(cloudSyncAt).toLocaleTimeString()}</p>}
+            {!authSession ? (
+              <>
+                <input
+                  value={cloudEmail}
+                  onChange={(e) => setCloudEmail(e.target.value)}
+                  className="w-full px-2 py-1 rounded bg-white/10 border border-white/20"
+                  placeholder="email"
+                />
+                <input
+                  type="password"
+                  value={cloudPassword}
+                  onChange={(e) => setCloudPassword(e.target.value)}
+                  className="w-full px-2 py-1 rounded bg-white/10 border border-white/20"
+                  placeholder="password"
+                />
+                <div className="flex gap-2">
+                  <button className="flex-1 px-2 py-1 rounded bg-indigo-600" onClick={() => void handleCloudLogin('login')}>Entrar</button>
+                  <button className="flex-1 px-2 py-1 rounded bg-emerald-600" onClick={() => void handleCloudLogin('register')}>Crear</button>
+                </div>
+              </>
+            ) : (
+              <button className="w-full px-2 py-1 rounded bg-rose-600" onClick={handleCloudLogout}>Cerrar sesión</button>
+            )}
+            {cloudError && <p className="text-rose-300 text-xs">{cloudError}</p>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+function App() {
+  return (
+    <GameProvider>
+      <GameApp />
+    </GameProvider>
+  );
+}
+
+export default App;
