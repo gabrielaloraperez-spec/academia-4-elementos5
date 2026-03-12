@@ -40,7 +40,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({ kingdoms, paths, onSelectKin
           style={{ backgroundImage: `${WORLD_BACKGROUND}, linear-gradient(to bottom, #020617, #1e1b4b, #0f172a)` }}
         />
 
-        <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
+        <svg className="absolute inset-0 h-full w-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden>
           {paths.map((path) => {
             const from = kingdomById.get(path.from);
             const to = kingdomById.get(path.to);

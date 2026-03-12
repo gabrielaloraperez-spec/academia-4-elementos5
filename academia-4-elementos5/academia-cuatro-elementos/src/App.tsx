@@ -68,16 +68,19 @@ const GameApp: React.FC = () => {
     const restoreSession = async () => {
       const session = getAuthSession();
 
-      if (!session) {
-        await clearLocalProgress().catch(() => undefined);
-        if (!mounted) return;
-        resetGame();
-        resetLocalUiState();
-        return;
-      }
-
       const savedSession = await loadAppSessionFromIndexedDb();
       if (!mounted || !savedSession) return;
+
+      if (!session) {
+        // Local mode: keep current in-memory game defaults and only restore view state if present.
+        setCurrentScreen(savedSession.currentScreen);
+        setCurrentLevelId(savedSession.currentLevelId);
+        setGameOverScore(savedSession.gameOverScore);
+        setIsBossGameOver(savedSession.isBossGameOver);
+        setChallengeLevelId(savedSession.challengeLevelId);
+        setPendingPerfectChallenge(savedSession.pendingPerfectChallenge);
+        return;
+      }
 
       setCurrentScreen(savedSession.currentScreen);
       setCurrentLevelId(savedSession.currentLevelId);

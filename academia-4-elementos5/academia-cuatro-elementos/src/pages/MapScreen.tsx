@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../context/useGame';
 import { levels, achievements as allAchievements } from '../data/gameData';
 import { WorldMap } from '../components/world/WorldMap';
+import { KingdomCard } from '../components/game/KingdomCard';
+import { TimeTower } from '../components/game/TimeTower';
 import { playUiClick } from '../utils/sound';
 
 interface MapScreenProps {
@@ -191,6 +193,22 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onLevelSelect, onBossSelec
           </>
         )}
       />
+
+
+      <div className="max-w-md mx-auto mt-6 space-y-4">
+        {levels.map((level) => (
+          <KingdomCard
+            key={level.id}
+            level={level}
+            unlocked={state.unlockedLevels.includes(level.id)}
+            completed={state.unlockedLevels.includes(level.id + 1)}
+            highScore={state.highScores[level.id]}
+            onSelect={() => { playUiClick(); onLevelSelect(level.id); }}
+          />
+        ))}
+
+        <TimeTower progress={towerProgress} bossUnlocked={bossUnlocked} onBossSelect={onBossSelect} />
+      </div>
 
       <div className="max-w-md mx-auto mt-8 text-center text-white/60 text-xs">
         <p>Atajos: [1-4] reinos, [B] jefe final, [L] logros.</p>
