@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../context/useGame';
 import { Level } from '../data/gameData';
-import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/GameComponents';
-import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
+import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/game/GameComponents';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
 
 interface LevelScreenProps {
   level: Level;

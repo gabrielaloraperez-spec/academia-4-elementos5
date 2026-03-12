@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useGame } from '../context/useGame';
 import { bossProblems, Problem } from '../data/gameData';
-import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/GameComponents';
-import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
+import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/game/GameComponents';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
 
 interface BossScreenProps {
   onComplete: () => void;
