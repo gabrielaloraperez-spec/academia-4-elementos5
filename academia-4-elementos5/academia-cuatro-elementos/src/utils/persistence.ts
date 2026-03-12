@@ -1,4 +1,4 @@
-import { GameState } from '../context/gameConstants';
+import { GameState } from '../constants/gameConstants';
 
 const DB_NAME = 'academia-pwa-db';
 const STORE_NAME = 'kv';
