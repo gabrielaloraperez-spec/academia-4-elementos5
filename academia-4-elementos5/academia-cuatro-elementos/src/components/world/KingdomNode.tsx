@@ -29,8 +29,8 @@ export const KingdomNode: React.FC<KingdomNodeProps> = ({
       type="button"
       onClick={() => onSelect(kingdomId)}
       disabled={!unlocked}
-      className="absolute -translate-x-1/2 -translate-y-1/2 group pointer-events-auto"
-      style={{ left: `${position.x}%`, top: `${position.y}%` }}
+      className="absolute z-10 group pointer-events-auto touch-manipulation flex flex-col items-center"
+      style={{ left: `calc(${position.x}% - 32px)`, top: `calc(${position.y}% - 32px)` }}
       aria-label={`Entrar a ${title}`}
     >
       <div
