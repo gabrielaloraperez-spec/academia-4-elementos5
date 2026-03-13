@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../context/useGame';
 import { levels, achievements as allAchievements } from '../data/gameData';
-import { KingdomCard } from '../components/kingdom/KingdomCard';
-import { TimeTower } from '../components/kingdom/TimeTower';
-import { playUiClick } from '../lib/sound';
+import { WorldMap } from '../components/world/WorldMap';
+import { KingdomCard } from '../components/game/KingdomCard';
+import { TimeTower } from '../components/game/TimeTower';
+import { playUiClick } from '../utils/sound';
 
 interface MapScreenProps {
   onLevelSelect: (levelId: number) => void;
@@ -71,8 +72,40 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onLevelSelect, onBossSelec
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [state.unlockedLevels, bossUnlocked, onLevelSelect, onBossSelect]);
 
+
+
+  const kingdoms = [
+    ...levels.map((level, index) => ({
+      kingdomId: level.id,
+      unlocked: state.unlockedLevels.includes(level.id),
+      icon: level.icon,
+      position: [
+        { x: 18, y: 70 },
+        { x: 38, y: 46 },
+        { x: 62, y: 58 },
+        { x: 82, y: 34 },
+      ][index],
+      title: level.realm,
+      completed: state.unlockedLevels.includes(level.id + 1),
+    })),
+    {
+      kingdomId: 5,
+      unlocked: bossUnlocked,
+      icon: '👑',
+      position: { x: 50, y: 18 },
+      title: 'Torre del Tiempo',
+      completed: false,
+    },
+  ];
+
+  const paths = [
+    { from: 1, to: 2, unlocked: state.unlockedLevels.includes(2) },
+    { from: 2, to: 3, unlocked: state.unlockedLevels.includes(3) },
+    { from: 3, to: 4, unlocked: state.unlockedLevels.includes(4) },
+    { from: 4, to: 5, unlocked: bossUnlocked },
+  ];
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-violet-950 to-slate-900 p-4">
+    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "linear-gradient(rgba(2,6,23,0.74), rgba(30,27,75,0.74)), url(/assets/backgrounds/world-map.png), url(/assets/backgrounds/world-map.svg)" }}>
       <div className="max-w-md mx-auto mb-6 relative">
         <div className="bg-white/10 backdrop-blur rounded-2xl p-4 flex items-center justify-between border border-white/10">
           <div className="flex items-center gap-3">
@@ -138,7 +171,31 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onLevelSelect, onBossSelec
         <p className="text-white/70 text-sm mt-1">Explora cada reino elemental y fortalece tu poder numérico</p>
       </div>
 
-      <div className="max-w-md mx-auto space-y-4">
+      <WorldMap
+        kingdoms={kingdoms}
+        paths={paths}
+        onSelectKingdom={(kingdomId) => {
+          playUiClick();
+          if (kingdomId === 5) {
+            onBossSelect();
+            return;
+          }
+          onLevelSelect(kingdomId);
+        }}
+        overlays={(
+          <>
+            <div className="absolute left-3 top-3 md:left-5 md:top-5 rounded-xl border border-white/20 bg-black/35 px-3 py-2 text-white/90 text-xs md:text-sm">
+              Progreso de torre: <span className="font-semibold text-cyan-200">{Math.round(towerProgress)}%</span>
+            </div>
+            <div className="absolute right-3 bottom-3 md:right-5 md:bottom-5 rounded-xl border border-white/20 bg-black/35 px-3 py-2 text-[11px] md:text-xs text-white/80">
+              Toca un reino para comenzar
+            </div>
+          </>
+        )}
+      />
+
+
+      <div className="max-w-md mx-auto mt-6 space-y-4">
         {levels.map((level) => (
           <KingdomCard
             key={level.id}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Level } from '../../data/gameData';
-import { getKingdomTheme } from '../../theme/kingdomThemes';
+import { getKingdomTheme } from '../../styles/kingdomThemes';
 
 interface KingdomCardProps {
   level: Level;
