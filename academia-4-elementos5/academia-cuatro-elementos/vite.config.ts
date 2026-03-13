@@ -5,6 +5,8 @@ import sourceIdentifierPlugin from 'vite-plugin-source-identifier'
 import { VitePWA } from 'vite-plugin-pwa'
 
 const isProd = process.env.BUILD_MODE === 'prod'
+const isVercelProduction = process.env.VERCEL_ENV === 'production'
+const enablePwa = isProd || isVercelProduction
 
 export default defineConfig({
   plugins: [
@@ -14,7 +16,7 @@ export default defineConfig({
       attributePrefix: 'data-matrix',
       includeProps: true,
     }),
-    VitePWA({
+    ...(enablePwa ? [VitePWA({
       registerType: 'autoUpdate',
       workbox: {
         cacheId: 'academia-domain-challenge-v2',
@@ -60,7 +62,7 @@ export default defineConfig({
           }
         ]
       }
-    })
+    })] : [])
   ],
   resolve: {
     alias: {
