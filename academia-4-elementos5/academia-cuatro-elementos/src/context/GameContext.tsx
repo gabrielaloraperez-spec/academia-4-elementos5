@@ -1,8 +1,8 @@
 import React, { useState, useEffect, ReactNode, useRef } from 'react';
 import { levels, abilities, SCORING } from '../data/gameData';
-import { GameContext, GameState, initialState } from './gameConstants';
-import { loadGameStateFromIndexedDb, saveGameStateToIndexedDb } from '../lib/persistence';
-import { getAuthSession } from '../lib/cloudSync';
+import { GameContext, GameState, initialState } from '../constants/gameConstants';
+import { loadGameStateFromIndexedDb, saveGameStateToIndexedDb } from '../utils/persistence';
+import { getAuthSession } from '../utils/cloudSync';
 
 export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, setState] = useState<GameState>(initialState);

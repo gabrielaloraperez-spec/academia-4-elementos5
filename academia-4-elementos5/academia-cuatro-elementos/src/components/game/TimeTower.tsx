@@ -1,5 +1,5 @@
 import React from 'react';
-import { kingdomThemes } from '../../theme/kingdomThemes';
+import { kingdomThemes } from '../../styles/kingdomThemes';
 
 interface TimeTowerProps {
   progress: number;
