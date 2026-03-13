@@ -132,7 +132,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onKingdomSelect, onKnowled
             })}
           </svg>
 
-          <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0">
             {mapNodes.map((node) => (
               <KingdomNode
                 key={node.id}
