@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useGame } from '../context/useGame';
 import { bossProblems, Problem } from '../data/gameData';
-import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/GameComponents';
-import { playCorrect, playSuccess, playUiClick, playWrong } from '../lib/sound';
+import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/game/GameComponents';
+import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
 
 interface BossScreenProps {
   onComplete: () => void;
@@ -10,6 +10,10 @@ interface BossScreenProps {
 }
 
 const BOSS_TIME = 120; // seconds
+
+const bossBackgroundStyle = {
+  backgroundImage: "linear-gradient(rgba(69,10,10,0.72), rgba(88,28,135,0.72)), url(/assets/backgrounds/boss-bg.png), url(/assets/backgrounds/boss-bg.svg)",
+} as const;
 
 export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }) => {
   const { state, answerQuestion, useAbility: activateAbility, getAbilityData } = useGame();
@@ -144,7 +148,7 @@ export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }
 
   if (isComplete) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-red-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={bossBackgroundStyle}>
         <div className="max-w-md w-full bg-white rounded-3xl p-8 text-center shadow-2xl">
           <div className="text-6xl mb-4">🏆</div>
           <h2 className="text-2xl font-bold text-amber-600 mb-2">
@@ -176,7 +180,7 @@ export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-red-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex flex-col" style={bossBackgroundStyle}>
       {/* Header */}
       <div className="p-4">
         <div className="max-w-md mx-auto">

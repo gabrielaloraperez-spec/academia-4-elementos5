@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { GameProvider } from './context/GameContext';
 import { useGame } from './context/useGame';
 import {
@@ -9,15 +9,16 @@ import {
   BossScreen,
   GameOverScreen,
   DomainChallengeScreen
-} from './screens';
+} from './pages';
 import { levels } from './data/gameData';
+import { useGameState } from './hooks/useGameState';
 import {
   loadAppSessionFromIndexedDb,
   loadGameStateFromIndexedDb,
   saveAppSessionToIndexedDb,
   clearLocalProgress,
   AppSessionState,
-} from './lib/persistence';
+} from './utils/persistence';
 import {
   getAuthSession,
   isCloudSyncConfigured,
@@ -27,25 +28,37 @@ import {
   pullCloudProgress,
   pushCloudProgress,
   registerWithEmail,
-} from './lib/cloudSync';
-
-type Screen = 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
+} from './utils/cloudSync';
 
 const GameApp: React.FC = () => {
   const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel, resetGame, restoreGame } = useGame();
-  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
-  const [currentLevelId, setCurrentLevelId] = useState<number>(0);
-  const [gameOverScore, setGameOverScore] = useState<number>(0);
-  const [isBossGameOver, setIsBossGameOver] = useState<boolean>(false);
-  const [challengeLevelId, setChallengeLevelId] = useState<number>(0);
-  const [pendingPerfectChallenge, setPendingPerfectChallenge] = useState<boolean>(false);
-
-  const [cloudEmail, setCloudEmail] = useState('');
-  const [cloudPassword, setCloudPassword] = useState('');
-  const [cloudError, setCloudError] = useState('');
-  const [cloudStatus, setCloudStatus] = useState('Local');
-  const [cloudSyncAt, setCloudSyncAt] = useState<number>(0);
-  const [showCloudPanel, setShowCloudPanel] = useState(false);
+  const {
+    currentScreen,
+    setCurrentScreen,
+    currentLevelId,
+    setCurrentLevelId,
+    gameOverScore,
+    setGameOverScore,
+    isBossGameOver,
+    setIsBossGameOver,
+    challengeLevelId,
+    setChallengeLevelId,
+    pendingPerfectChallenge,
+    setPendingPerfectChallenge,
+    cloudEmail,
+    setCloudEmail,
+    cloudPassword,
+    setCloudPassword,
+    cloudError,
+    setCloudError,
+    cloudStatus,
+    setCloudStatus,
+    cloudSyncAt,
+    setCloudSyncAt,
+    showCloudPanel,
+    setShowCloudPanel,
+    resetLocalUiState,
+  } = useGameState();
 
   const authSession = useMemo(() => getAuthSession(), [cloudStatus]);
 
@@ -55,21 +68,19 @@ const GameApp: React.FC = () => {
     const restoreSession = async () => {
       const session = getAuthSession();
 
-      if (!session) {
-        await clearLocalProgress().catch(() => undefined);
-        if (!mounted) return;
-        resetGame();
-        setCurrentScreen('welcome');
-        setCurrentLevelId(0);
-        setGameOverScore(0);
-        setIsBossGameOver(false);
-        setChallengeLevelId(0);
-        setPendingPerfectChallenge(false);
-        return;
-      }
-
       const savedSession = await loadAppSessionFromIndexedDb();
       if (!mounted || !savedSession) return;
+
+      if (!session) {
+        // Local mode: keep current in-memory game defaults and only restore view state if present.
+        setCurrentScreen(savedSession.currentScreen);
+        setCurrentLevelId(savedSession.currentLevelId);
+        setGameOverScore(savedSession.gameOverScore);
+        setIsBossGameOver(savedSession.isBossGameOver);
+        setChallengeLevelId(savedSession.challengeLevelId);
+        setPendingPerfectChallenge(savedSession.pendingPerfectChallenge);
+        return;
+      }
 
       setCurrentScreen(savedSession.currentScreen);
       setCurrentLevelId(savedSession.currentLevelId);
@@ -83,7 +94,7 @@ const GameApp: React.FC = () => {
     return () => {
       mounted = false;
     };
-  }, [resetGame]);
+  }, [resetGame, resetLocalUiState]);
 
   useEffect(() => {
     if (state.playerName && currentScreen === 'welcome') {
@@ -167,10 +178,18 @@ const GameApp: React.FC = () => {
     await handleRestartFromBeginning();
   };
 
-  const handleStartLevel = (levelId: number) => {
+  const handleStartDomainChallengeFromMap = (levelId: number) => {
     startLevel(levelId);
     setCurrentLevelId(levelId);
-    setCurrentScreen('level');
+    setChallengeLevelId(levelId);
+    setPendingPerfectChallenge(false);
+    setCurrentScreen('domain_challenge');
+  };
+
+  const handleStartKnowledgeFromMap = () => {
+    const knowledgeLevelId = Math.min(4, Math.max(1, currentLevelId || 1));
+    setCurrentLevelId(knowledgeLevelId);
+    setCurrentScreen('knowledge');
   };
 
   const handleLevelComplete = (wasPerfect: boolean = false) => {
@@ -215,14 +234,7 @@ const GameApp: React.FC = () => {
   const handleRestartFromBeginning = async () => {
     await clearLocalProgress().catch(() => undefined);
     resetGame();
-    setCurrentScreen('welcome');
-    setCurrentLevelId(0);
-    setGameOverScore(0);
-    setIsBossGameOver(false);
-    setChallengeLevelId(0);
-    setPendingPerfectChallenge(false);
-    setCloudError('');
-    setShowCloudPanel(false);
+    resetLocalUiState();
   };
 
   const getCurrentLevel = () => {
@@ -240,7 +252,7 @@ const GameApp: React.FC = () => {
       case 'welcome':
         return <WelcomeScreen />;
       case 'map':
-        return <MapScreen onLevelSelect={handleStartLevel} onBossSelect={handleStartBoss} />;
+        return <MapScreen onKingdomSelect={handleStartDomainChallengeFromMap} onKnowledgeSelect={handleStartKnowledgeFromMap} onBossSelect={handleStartBoss} />;
       case 'level': {
         const level = getCurrentLevel();
         if (!level) return <WelcomeScreen />;
