@@ -178,10 +178,18 @@ const GameApp: React.FC = () => {
     await handleRestartFromBeginning();
   };
 
-  const handleStartLevel = (levelId: number) => {
+  const handleStartDomainChallengeFromMap = (levelId: number) => {
     startLevel(levelId);
     setCurrentLevelId(levelId);
-    setCurrentScreen('level');
+    setChallengeLevelId(levelId);
+    setPendingPerfectChallenge(false);
+    setCurrentScreen('domain_challenge');
+  };
+
+  const handleStartKnowledgeFromMap = () => {
+    const knowledgeLevelId = Math.min(4, Math.max(1, currentLevelId || 1));
+    setCurrentLevelId(knowledgeLevelId);
+    setCurrentScreen('knowledge');
   };
 
   const handleLevelComplete = (wasPerfect: boolean = false) => {
@@ -244,7 +252,7 @@ const GameApp: React.FC = () => {
       case 'welcome':
         return <WelcomeScreen />;
       case 'map':
-        return <MapScreen onLevelSelect={handleStartLevel} onBossSelect={handleStartBoss} />;
+        return <MapScreen onKingdomSelect={handleStartDomainChallengeFromMap} onKnowledgeSelect={handleStartKnowledgeFromMap} onBossSelect={handleStartBoss} />;
       case 'level': {
         const level = getCurrentLevel();
         if (!level) return <WelcomeScreen />;

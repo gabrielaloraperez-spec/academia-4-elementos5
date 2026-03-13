@@ -37,8 +37,8 @@ export const KingdomNode: React.FC<KingdomNodeProps> = ({
         className={[
           'h-14 w-14 md:h-16 md:w-16 rounded-full border-2 flex items-center justify-center text-2xl md:text-3xl transition-all duration-300 shadow-xl',
           unlocked
-            ? 'bg-slate-900/85 border-cyan-300/70 text-white group-hover:scale-110 group-hover:border-cyan-200'
-            : 'bg-slate-800/85 border-slate-600 text-slate-400 opacity-70 cursor-not-allowed',
+            ? 'bg-slate-900/90 border-cyan-300/80 text-white animate-float-air ring-4 ring-cyan-300/30 group-hover:scale-110 group-hover:border-cyan-200 group-hover:ring-cyan-200/50'
+            : 'bg-slate-700/90 border-slate-500 text-slate-300 grayscale opacity-80 cursor-not-allowed',
         ].join(' ')}
       >
         {unlocked ? icon : '🔒'}
