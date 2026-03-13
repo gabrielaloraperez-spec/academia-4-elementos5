@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Level, Problem } from '../data/gameData';
 import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
+import { getKingdomTheme, withSvgFallback } from '../styles/kingdomThemes';
 
 interface DomainChallengeScreenProps {
   level: Level | null;
@@ -41,6 +42,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
   }, [level]);
 
   const currentProblem = mixedProblems[currentProblemIndex];
+  const challengeTheme = level ? getKingdomTheme(level.operation) : null;
   const progress = ((TOTAL_TIME_SECONDS - timeLeft) / TOTAL_TIME_SECONDS) * 100;
   const accuracy = answeredCount > 0 ? Math.round((correctAnswers / answeredCount) * 100) : 0;
 
@@ -126,7 +128,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
 
   if (!level || mixedProblems.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-sky-900 to-indigo-950 flex items-center justify-center p-4">
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(30,41,59,0.68), rgba(30,41,59,0.52)), ${withSvgFallback(challengeTheme?.background ?? '/assets/backgrounds/world-map.png')}` }}>
         <div className="max-w-xl w-full bg-white rounded-3xl p-8 text-center">
           <p className="text-gray-700 mb-4">No se encontró información del nivel para el reto de dominio.</p>
           <button onClick={onFail} className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold">
@@ -139,7 +141,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
 
   if (!started) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-sky-900 to-indigo-950 flex items-center justify-center p-4">
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(30,41,59,0.68), rgba(30,41,59,0.52)), ${withSvgFallback(challengeTheme?.background ?? '/assets/backgrounds/world-map.png')}` }}>
         <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
           <div className="text-6xl mb-4">🌀</div>
           <h1 className="text-3xl font-bold text-indigo-700 mb-4">Reto de Dominio</h1>
@@ -162,7 +164,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
 
   if (result === 'success') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-sky-900 to-indigo-950 flex items-center justify-center p-4">
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(30,41,59,0.68), rgba(30,41,59,0.52)), ${withSvgFallback(challengeTheme?.background ?? '/assets/backgrounds/world-map.png')}` }}>
         <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
           <div className="text-6xl mb-4">🏆</div>
           <h2 className="text-3xl font-bold text-indigo-700 mb-3">¡Reto superado!</h2>
@@ -182,7 +184,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
 
   if (result === 'failed') {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-sky-900 to-indigo-950 flex items-center justify-center p-4">
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(30,41,59,0.68), rgba(30,41,59,0.52)), ${withSvgFallback(challengeTheme?.background ?? '/assets/backgrounds/world-map.png')}` }}>
         <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
           <div className="text-6xl mb-4">💥</div>
           <h2 className="text-3xl font-bold text-red-600 mb-3">No alcanzaste el dominio</h2>
@@ -199,7 +201,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-950 via-sky-900 to-indigo-950 p-4">
+    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: `linear-gradient(rgba(30,41,59,0.68), rgba(30,41,59,0.52)), ${withSvgFallback(challengeTheme?.background ?? '/assets/backgrounds/world-map.png')}` }}>
       <div className="max-w-3xl mx-auto">
         <div className="bg-white rounded-2xl p-6 shadow-xl mb-4">
           <div className="flex justify-between items-center mb-4">

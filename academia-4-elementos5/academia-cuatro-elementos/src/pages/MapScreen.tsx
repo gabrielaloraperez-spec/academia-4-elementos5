@@ -105,7 +105,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onLevelSelect, onBossSelec
     { from: 4, to: 5, unlocked: bossUnlocked },
   ];
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-violet-950 to-slate-900 p-4">
+    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: "linear-gradient(rgba(2,6,23,0.74), rgba(30,27,75,0.74)), url(/assets/backgrounds/world-map.png), url(/assets/backgrounds/world-map.svg)" }}>
       <div className="max-w-md mx-auto mb-6 relative">
         <div className="bg-white/10 backdrop-blur rounded-2xl p-4 flex items-center justify-between border border-white/10">
           <div className="flex items-center gap-3">
