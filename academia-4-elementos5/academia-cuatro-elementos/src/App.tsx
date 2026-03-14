@@ -99,7 +99,7 @@ const GameApp: React.FC = () => {
 
   useEffect(() => {
     if (state.playerName && currentScreen === 'welcome') {
-      setCurrentScreen('map');
+      setCurrentScreen('archive');
     }
   }, [state.playerName, currentScreen]);
 
@@ -277,7 +277,11 @@ const GameApp: React.FC = () => {
             level={challengeLevel}
             onComplete={() => {
               completeLevel(challengeLevelId, pendingPerfectChallenge);
-              setCurrentScreen('knowledge');
+              if (challengeLevelId === 4) {
+                setCurrentScreen('knowledge');
+                return;
+              }
+              setCurrentScreen('map');
             }}
             onFail={() => {
               resetLevel();

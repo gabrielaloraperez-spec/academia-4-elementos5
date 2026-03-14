@@ -61,7 +61,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onArchiveSelect, onKingdom
   return (
     <div
       className="min-h-screen w-full bg-cover bg-center bg-no-repeat px-3 py-6 md:p-8"
-      style={{ backgroundImage: 'url(/assets/backgrounds/world-map.svg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
+      style={{ backgroundImage: `url(${ASSET_BASE}/world-map.png)`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       <div className="mx-auto w-full max-w-6xl">
         <div className="mb-4 rounded-2xl border border-white/25 bg-slate-900/30 backdrop-blur-sm px-4 py-3 text-white flex items-center justify-between">
@@ -75,7 +75,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onArchiveSelect, onKingdom
           </div>
         </div>
 
-        <WorldMap kingdoms={kingdoms} paths={paths} onSelectKingdom={handleSelect} backgroundImage="/assets/backgrounds/world-map.svg" />
+        <WorldMap kingdoms={kingdoms} paths={paths} onSelectKingdom={handleSelect} backgroundImage={`${ASSET_BASE}/world-map.png`} />
       </div>
     </div>
   );
