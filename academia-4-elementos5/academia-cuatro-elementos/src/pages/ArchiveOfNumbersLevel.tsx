@@ -5,251 +5,357 @@ interface ArchiveOfNumbersLevelProps {
   onComplete: () => void;
 }
 
+interface ExplanationStep {
+  speaker: string;
+  text: string;
+}
+
 interface Activity {
   question: string;
   options: string[];
   correctIndex: number;
-  explanation?: string;
+  feedbackCorrect?: string;
+  feedbackIncorrect?: string;
 }
 
 interface Section {
-  id: number;
+  key: 'symbols' | 'decimal' | 'ancient' | 'preparation';
   title: string;
-  intro: string;
-  explanation: string;
+  buttonLabel: string;
+  explanationCards: ExplanationStep[];
   activities: Activity[];
 }
 
+const introDialogue: ExplanationStep[] = [
+  {
+    speaker: 'Numerius',
+    text: 'Bienvenido, aprendiz. Antes de dominar los poderes de los cuatro reinos, debes comprender el lenguaje que sostiene el equilibrio del mundo: los números.',
+  },
+  {
+    speaker: 'Numerius',
+    text: 'Durante miles de años, diferentes civilizaciones crearon distintas formas de representar cantidades. A estas formas las llamamos sistemas numéricos.',
+  },
+  {
+    speaker: 'Numerius',
+    text: 'Hoy exploraremos algunos de los más importantes. Cuando los comprendas, estarás listo para comenzar tu viaje por los reinos matemáticos.',
+  },
+];
+
 const sections: Section[] = [
   {
-    id: 1,
-    title: 'Sala de Símbolos',
-    intro: 'Antes de dominar los reinos elementales, debes reconocer cómo distintas civilizaciones escribían los números.',
-    explanation: 'Sistema romano: usa letras (I, V, X...). Sistema maya: usa puntos (• = 1) y barras (— = 5).',
+    key: 'symbols',
+    title: 'Sala de los Símbolos',
+    buttonLabel: 'Comenzar desafío',
+    explanationCards: [
+      { speaker: 'Numerius', text: 'Muchos pueblos antiguos necesitaban contar objetos, personas y alimentos. Para hacerlo inventaron símbolos para representar números.' },
+      { speaker: 'Numerius', text: 'Los romanos usaban letras para escribir números. Por ejemplo: I = 1, V = 5, X = 10.' },
+      { speaker: 'Numerius', text: 'Los mayas, en cambio, usaban puntos y barras. • representa 1 y — representa 5.' },
+      { speaker: 'Numerius', text: 'Aunque los símbolos son diferentes, todos representan cantidades. Ahora veamos si puedes reconocer algunos de ellos.' },
+    ],
     activities: [
-      {
-        question: 'Relaciona el símbolo romano para el número 5',
-        options: ['X', 'I', 'V', 'L'],
-        correctIndex: 2,
-        explanation: 'En números romanos, V representa 5.',
-      },
-      {
-        question: 'En el sistema maya, una barra (—) representa:',
-        options: ['1', '5', '10', '50'],
-        correctIndex: 1,
-      },
-      {
-        question: '¿Qué sistema usa letras para representar números?',
-        options: ['Maya', 'Romano', 'Decimal', 'Binario'],
-        correctIndex: 1,
-      },
+      { question: '¿Qué número representa V en números romanos?', options: ['1', '5', '10', '50'], correctIndex: 1 },
+      { question: '¿Qué número representa X?', options: ['5', '10', '15', '20'], correctIndex: 1 },
+      { question: 'En el sistema maya: ••• ¿cuánto vale?', options: ['2', '3', '5', '8'], correctIndex: 1 },
+      { question: '¿Qué sistema usa letras para representar números?', options: ['Maya', 'Romano', 'Decimal'], correctIndex: 1 },
     ],
   },
   {
-    id: 2,
-    title: 'Taller Decimal',
-    intro: 'Ahora aprenderás el valor posicional: centenas, decenas y unidades.',
-    explanation: 'Ejemplo: 356 = 3 centenas, 5 decenas, 6 unidades.',
+    key: 'decimal',
+    title: 'Taller del Sistema Decimal',
+    buttonLabel: 'Practicar',
+    explanationCards: [
+      { speaker: 'Numerius', text: 'El sistema que usarás en los reinos es el sistema decimal.' },
+      { speaker: 'Numerius', text: 'Se llama decimal porque está basado en 10 símbolos: 0 1 2 3 4 5 6 7 8 9.' },
+      { speaker: 'Numerius', text: 'En este sistema, la posición del número cambia su valor.' },
+      { speaker: 'Numerius', text: 'Observa el número 345: 3 está en las centenas, 4 en las decenas y 5 en las unidades.' },
+      { speaker: 'Numerius', text: 'Comprender el valor de cada posición es fundamental para poder sumar, restar, multiplicar y dividir.' },
+    ],
     activities: [
-      {
-        question: 'En el número 356, ¿cuántas decenas hay?',
-        options: ['3', '5', '6', '35'],
-        correctIndex: 1,
-      },
-      {
-        question: 'En el número 482, el valor del 8 es:',
-        options: ['8', '80', '800', '0.8'],
-        correctIndex: 1,
-      },
-      {
-        question: '3 centenas + 2 decenas + 5 unidades =',
-        options: ['352', '235', '325', '523'],
-        correctIndex: 2,
-      },
+      { question: 'Número: 356. ¿Cuántas decenas hay?', options: ['3', '5', '6', '35'], correctIndex: 1 },
+      { question: 'Número: 482. ¿Qué valor tiene el 8?', options: ['8', '80', '800', '8000'], correctIndex: 1 },
+      { question: '3 centenas + 4 decenas + 2 unidades = ?', options: ['342', '324', '432', '243'], correctIndex: 0 },
+      { question: '¿Cuántas centenas hay en 700?', options: ['7', '70', '700', '17'], correctIndex: 0 },
     ],
   },
   {
-    id: 3,
-    title: 'Desafío Ancestral',
-    intro: 'Lee con atención: en números romanos, X vale 10 y V vale 5. Se suman cuando van en orden descendente.',
-    explanation: 'Ejemplo: XV = 10 + 5 = 15. XX = 10 + 10 = 20.',
+    key: 'ancient',
+    title: 'El Reto de los Antiguos',
+    buttonLabel: 'Resolver desafío',
+    explanationCards: [
+      { speaker: 'Numerius', text: 'Los romanos escribían números combinando letras.' },
+      { speaker: 'Numerius', text: 'Cuando una letra con menor valor aparece después, se suma. Ejemplo: X + V = XV = 15.' },
+      { speaker: 'Numerius', text: 'Estos números se usaban para construir monumentos, registrar años y organizar imperios.' },
+      { speaker: 'Numerius', text: 'Lee con atención y responde las preguntas.' },
+    ],
     activities: [
-      {
-        question: 'XV equivale a:',
-        options: ['14', '15', '16', '25'],
-        correctIndex: 1,
-      },
-      {
-        question: 'XX equivale a:',
-        options: ['10', '15', '20', '30'],
-        correctIndex: 2,
-      },
+      { question: '¿Qué número representa XV?', options: ['10', '15', '20', '25'], correctIndex: 1 },
+      { question: '¿Qué número representa XX?', options: ['10', '20', '30', '40'], correctIndex: 1 },
+      { question: '¿Qué número representa V + I?', options: ['4', '5', '6', '7'], correctIndex: 2 },
     ],
   },
   {
-    id: 4,
+    key: 'preparation',
     title: 'Preparación para los Reinos',
-    intro: 'Última prueba. Demuestra que dominas el sistema decimal para entrar a los reinos matemáticos.',
-    explanation: 'Compara, ordena y construye números con decenas y unidades.',
+    buttonLabel: 'Último desafío',
+    explanationCards: [
+      { speaker: 'Numerius', text: 'Los números no solo se escriben. También se organizan y comparan.' },
+      { speaker: 'Numerius', text: 'Cuando entiendes las posiciones y los valores, puedes saber cuál número es mayor o menor.' },
+      { speaker: 'Numerius', text: 'Esta habilidad será muy importante cuando enfrentes los desafíos de los reinos.' },
+      { speaker: 'Numerius', text: 'Demuestra que estás listo para continuar tu viaje.' },
+    ],
     activities: [
-      {
-        question: '4 decenas + 3 unidades =',
-        options: ['34', '43', '403', '7'],
-        correctIndex: 1,
-      },
-      {
-        question: '¿Cuál es mayor?',
-        options: ['389', '398', 'Son iguales', 'No se puede saber'],
-        correctIndex: 1,
-      },
-      {
-        question: 'Orden ascendente correcto:',
-        options: ['58, 45, 32', '45, 32, 58', '32, 45, 58', '32, 58, 45'],
-        correctIndex: 2,
-      },
+      { question: '4 decenas + 3 unidades = ?', options: ['34', '43', '403', '430'], correctIndex: 1 },
+      { question: '¿Cuál número es mayor?', options: ['389', '398'], correctIndex: 1 },
+      { question: 'Ordena de menor a mayor: 45 — 32 — 58', options: ['45 → 58 → 32', '32 → 45 → 58', '58 → 45 → 32'], correctIndex: 1 },
+      { question: '¿Cuántas unidades hay en 27?', options: ['2', '7', '27', '9'], correctIndex: 1 },
     ],
   },
 ];
 
+type ArchivePhase = 'intro' | 'explanation' | 'quiz' | 'complete';
+
+const DialogueAvatar: React.FC = () => (
+  <div className="w-full md:w-72 md:flex-shrink-0">
+    <div className="rounded-3xl border border-amber-100/60 bg-slate-900/70 p-4 shadow-[0_0_30px_rgba(250,204,21,0.2)]">
+      <div className="h-56 w-full rounded-2xl border border-amber-200/60 bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center">
+        <span className="text-6xl" aria-hidden>🧙</span>
+        <span className="mt-3 text-amber-100 font-semibold">Numerius</span>
+      </div>
+      <p className="mt-3 text-center text-amber-100 font-semibold">Maestro Numerius</p>
+    </div>
+  </div>
+);
+
+const ExplanationCard: React.FC<{
+  title: string;
+  step: ExplanationStep;
+  stepNumber: number;
+  totalSteps: number;
+  buttonLabel: string;
+  onNext: () => void;
+}> = ({ title, step, stepNumber, totalSteps, buttonLabel, onNext }) => (
+  <div className="parchment animate-[fadeIn_.35s_ease] rounded-3xl border border-amber-500/40 p-6 text-amber-950 shadow-[0_0_25px_rgba(251,191,36,0.25)]">
+    <p className="text-xs font-bold tracking-wide uppercase">{title}</p>
+    <p className="mt-2 text-sm font-semibold">{step.speaker}</p>
+    <p className="mt-3 text-lg leading-relaxed">{step.text}</p>
+    <div className="mt-5 flex items-center justify-between">
+      <span className="text-xs font-semibold">Tarjeta {stepNumber} de {totalSteps}</span>
+      <button type="button" onClick={onNext} className="rounded-xl bg-slate-900 px-4 py-2 text-amber-50 font-semibold hover:bg-slate-700">
+        {buttonLabel}
+      </button>
+    </div>
+  </div>
+);
+
+const QuizCard: React.FC<{
+  sectionTitle: string;
+  activity: Activity;
+  activityNumber: number;
+  totalActivities: number;
+  selectedIndex: number | null;
+  showFeedback: boolean;
+  onSelect: (index: number) => void;
+  onNext: () => void;
+}> = ({ sectionTitle, activity, activityNumber, totalActivities, selectedIndex, showFeedback, onSelect, onNext }) => (
+  <div className="parchment animate-[fadeIn_.35s_ease] rounded-3xl border border-amber-500/40 p-6 text-amber-950 shadow-[0_0_25px_rgba(251,191,36,0.25)]">
+    <p className="text-xs font-bold tracking-wide uppercase">{sectionTitle}</p>
+    <p className="mt-2 text-sm font-semibold">Pregunta {activityNumber} de {totalActivities}</p>
+    <p className="mt-3 text-lg">{activity.question}</p>
+
+    <div className="mt-4 grid gap-2">
+      {activity.options.map((option, idx) => {
+        const isCorrect = idx === activity.correctIndex;
+        const isSelected = idx === selectedIndex;
+
+        const stateClass = showFeedback
+          ? isCorrect
+            ? 'border-emerald-600 bg-emerald-100'
+            : isSelected
+              ? 'border-rose-600 bg-rose-100'
+              : 'border-amber-700/30 bg-white/70'
+          : 'border-amber-700/30 bg-white/70 hover:bg-white';
+
+        return (
+          <button
+            key={`${option}-${idx}`}
+            type="button"
+            disabled={showFeedback}
+            onClick={() => onSelect(idx)}
+            className={`rounded-xl border px-4 py-3 text-left transition ${stateClass}`}
+          >
+            {option}
+          </button>
+        );
+      })}
+    </div>
+
+    {showFeedback && (
+      <p className="mt-4 font-semibold">
+        {selectedIndex === activity.correctIndex ? activity.feedbackCorrect ?? '✅ ¡Respuesta correcta!' : activity.feedbackIncorrect ?? '❌ Respuesta incorrecta. ¡Sigue practicando!'}
+      </p>
+    )}
+
+    <div className="mt-5 flex justify-end">
+      <button
+        type="button"
+        onClick={onNext}
+        disabled={!showFeedback}
+        className={`rounded-xl px-4 py-2 font-semibold ${showFeedback ? 'bg-slate-900 text-amber-50 hover:bg-slate-700' : 'bg-slate-300 text-slate-500 cursor-not-allowed'}`}
+      >
+        Siguiente pregunta
+      </button>
+    </div>
+  </div>
+);
+
+const SectionProgressBar: React.FC<{ sectionIndex: number; totalSections: number }> = ({ sectionIndex, totalSections }) => {
+  const width = ((sectionIndex + 1) / totalSections) * 100;
+
+  return (
+    <div className="rounded-2xl bg-slate-900/55 border border-white/20 p-3 text-white">
+      <div className="h-2 rounded-full bg-white/15 overflow-hidden">
+        <div className="h-full rounded-full bg-cyan-300 transition-all duration-500" style={{ width: `${width}%` }} />
+      </div>
+      <p className="mt-2 text-xs">Sección {sectionIndex + 1} de {totalSections}</p>
+    </div>
+  );
+};
+
 export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ onComplete }) => {
+  const [phase, setPhase] = useState<ArchivePhase>('intro');
+  const [introIndex, setIntroIndex] = useState(0);
   const [sectionIndex, setSectionIndex] = useState(0);
+  const [explanationIndex, setExplanationIndex] = useState(0);
   const [activityIndex, setActivityIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [correctCount, setCorrectCount] = useState(0);
 
   const section = sections[sectionIndex];
   const activity = section.activities[activityIndex];
-  const progress = useMemo(() => {
-    const total = sections.reduce((acc, s) => acc + s.activities.length, 0);
-    const done = sections.slice(0, sectionIndex).reduce((acc, s) => acc + s.activities.length, 0) + activityIndex;
-    return Math.round((done / total) * 100);
-  }, [sectionIndex, activityIndex]);
 
-  const handleAnswer = (index: number) => {
+  const completionMessage = useMemo(
+    () => 'Has aprendido el lenguaje de los números. Ahora estás listo para entrar al Reino de la Energía.',
+    [],
+  );
+
+  const goToNextSection = () => {
+    if (sectionIndex < sections.length - 1) {
+      setSectionIndex((prev) => prev + 1);
+      setExplanationIndex(0);
+      setActivityIndex(0);
+      setSelectedIndex(null);
+      setShowFeedback(false);
+      setPhase('explanation');
+      return;
+    }
+
+    setPhase('complete');
+  };
+
+  const handleIntroNext = () => {
+    if (introIndex < introDialogue.length - 1) {
+      setIntroIndex((prev) => prev + 1);
+      return;
+    }
+
+    setPhase('explanation');
+  };
+
+  const handleExplanationNext = () => {
+    if (explanationIndex < section.explanationCards.length - 1) {
+      setExplanationIndex((prev) => prev + 1);
+      return;
+    }
+
+    setPhase('quiz');
+  };
+
+  const handleSelectAnswer = (index: number) => {
     if (showFeedback) return;
     setSelectedIndex(index);
     setShowFeedback(true);
-    if (index === activity.correctIndex) {
-      setCorrectCount((prev) => prev + 1);
-    }
   };
 
-  const handleContinue = () => {
+  const handleNextQuestion = () => {
     if (activityIndex < section.activities.length - 1) {
       setActivityIndex((prev) => prev + 1);
-    } else if (sectionIndex < sections.length - 1) {
-      setSectionIndex((prev) => prev + 1);
-      setActivityIndex(0);
+      setSelectedIndex(null);
+      setShowFeedback(false);
+      return;
     }
 
-    setSelectedIndex(null);
-    setShowFeedback(false);
+    goToNextSection();
   };
-
-  const isFinished = sectionIndex === sections.length - 1 && activityIndex === section.activities.length - 1 && showFeedback;
 
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-cover bg-center animate-background-float" style={{ backgroundImage: 'url(/assets/backgrounds/knowledge-room.png)' }} />
+      <div className="absolute inset-0 bg-cover bg-center animate-background-float" style={{ backgroundImage: 'url(/assets/backgrounds/knowledge-room.svg)' }} />
       <div className="absolute inset-0 fog-layer" />
       <ParticleLayer variant="air" />
 
-      <div className="relative z-10 w-full max-w-4xl bg-slate-900/55 border border-white/20 rounded-3xl p-5 md:p-8 text-white backdrop-blur-sm">
-        <div className="flex items-center gap-4 mb-4">
-          <div
-            className="h-16 w-16 rounded-full border border-amber-200/60 bg-center bg-cover flex items-center justify-center text-3xl"
-            style={{ backgroundImage: 'url(/assets/backgrounds/guardian-archive.png)' }}
-            aria-label="Maestro Numerius"
-          >
-            📚
+      <div className="relative z-10 w-full max-w-6xl">
+        {phase !== 'intro' && phase !== 'complete' && (
+          <div className="mb-4">
+            <SectionProgressBar sectionIndex={sectionIndex} totalSections={sections.length} />
           </div>
-          <div>
-            <p className="text-amber-200 font-semibold">Maestro Numerius</p>
-            <p className="text-white/90 text-sm">"Antes de dominar los reinos elementales, debes entender el lenguaje de los números."</p>
-          </div>
-        </div>
+        )}
 
-        <div className="mb-5">
-          <div className="h-2 w-full bg-white/15 rounded-full overflow-hidden">
-            <div className="h-full bg-cyan-300 transition-all duration-500" style={{ width: `${progress}%` }} />
-          </div>
-          <p className="text-xs mt-2 text-white/80">Progreso del Archivo: {progress}%</p>
-        </div>
+        <div className="flex flex-col md:flex-row gap-4 items-stretch">
+          <DialogueAvatar />
 
-        <div className="rounded-2xl bg-white/10 border border-white/15 p-4 md:p-6">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-cyan-100">Archivo de los Números · {section.title}</h1>
-          <p className="mt-2 text-white/90">{section.intro}</p>
-          <p className="mt-2 text-cyan-100/90 text-sm md:text-base">{section.explanation}</p>
+          <div className="flex-1">
+            {phase === 'intro' && (
+              <ExplanationCard
+                title="Introducción"
+                step={introDialogue[introIndex]}
+                stepNumber={introIndex + 1}
+                totalSteps={introDialogue.length}
+                buttonLabel={introIndex === introDialogue.length - 1 ? 'Comenzar entrenamiento' : 'Siguiente'}
+                onNext={handleIntroNext}
+              />
+            )}
 
-          <div className="mt-6 rounded-xl bg-slate-950/35 p-4 border border-white/15">
-            <p className="font-semibold mb-3">Actividad {activityIndex + 1}:</p>
-            <p className="text-lg mb-4">{activity.question}</p>
+            {phase === 'explanation' && (
+              <ExplanationCard
+                title={section.title}
+                step={section.explanationCards[explanationIndex]}
+                stepNumber={explanationIndex + 1}
+                totalSteps={section.explanationCards.length}
+                buttonLabel={explanationIndex === section.explanationCards.length - 1 ? section.buttonLabel : 'Siguiente'}
+                onNext={handleExplanationNext}
+              />
+            )}
 
-            <div className="grid gap-2">
-              {activity.options.map((option, idx) => {
-                const isCorrect = idx === activity.correctIndex;
-                const isSelected = idx === selectedIndex;
-                const stateClass = showFeedback
-                  ? isCorrect
-                    ? 'bg-emerald-500/30 border-emerald-300'
-                    : isSelected
-                      ? 'bg-rose-500/30 border-rose-300'
-                      : 'bg-white/5 border-white/10'
-                  : 'bg-white/5 border-white/20 hover:bg-white/10';
+            {phase === 'quiz' && (
+              <QuizCard
+                sectionTitle={section.title}
+                activity={activity}
+                activityNumber={activityIndex + 1}
+                totalActivities={section.activities.length}
+                selectedIndex={selectedIndex}
+                showFeedback={showFeedback}
+                onSelect={handleSelectAnswer}
+                onNext={handleNextQuestion}
+              />
+            )}
 
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    onClick={() => handleAnswer(idx)}
-                    disabled={showFeedback}
-                    className={`text-left px-4 py-3 rounded-xl border transition-all ${stateClass}`}
-                  >
-                    {option}
+            {phase === 'complete' && (
+              <div className="parchment animate-[fadeIn_.35s_ease] rounded-3xl border border-amber-500/40 p-6 text-amber-950 shadow-[0_0_25px_rgba(251,191,36,0.25)]">
+                <p className="text-sm font-semibold">Numerius</p>
+                <p className="mt-3 text-2xl font-extrabold">Excelente trabajo, aprendiz.</p>
+                <p className="mt-3 text-lg">{completionMessage}</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <button type="button" onClick={onComplete} className="rounded-xl bg-emerald-700 px-6 py-3 text-emerald-50 font-bold hover:bg-emerald-600">
+                    🔥 Entrar al Reino de la Energía
                   </button>
-                );
-              })}
-            </div>
-
-            {showFeedback && (
-              <div className="mt-4">
-                <p className="font-semibold text-cyan-100">
-                  {selectedIndex === activity.correctIndex ? '✅ ¡Excelente!' : '💡 Casi, sigue practicando.'}
-                </p>
-                {activity.explanation && <p className="text-sm text-white/85 mt-1">{activity.explanation}</p>}
+                  <button type="button" onClick={onComplete} className="rounded-xl bg-slate-800 px-6 py-3 text-slate-100 font-semibold hover:bg-slate-700">
+                    Regresar al mapa
+                  </button>
+                </div>
               </div>
             )}
           </div>
         </div>
-
-        {!isFinished && (
-          <div className="mt-5 flex justify-end">
-            <button
-              type="button"
-              onClick={handleContinue}
-              disabled={!showFeedback}
-              className={`px-6 py-3 rounded-xl font-semibold ${showFeedback ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-slate-600 cursor-not-allowed'}`}
-            >
-              Continuar
-            </button>
-          </div>
-        )}
-
-        {isFinished && (
-          <div className="mt-6 rounded-2xl bg-emerald-500/15 border border-emerald-300/30 p-5 text-center">
-            <p className="text-xl font-bold text-emerald-100">Excelente trabajo, aprendiz.</p>
-            <p className="text-emerald-50/90 mt-2">Ya estás listo para entrar al Reino de la Energía.</p>
-            <p className="text-sm text-white/80 mt-2">Aciertos: {correctCount}</p>
-            <button
-              type="button"
-              onClick={onComplete}
-              className="mt-4 px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold"
-            >
-              Regresar al mapa
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

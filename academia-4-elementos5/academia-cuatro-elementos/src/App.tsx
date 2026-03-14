@@ -248,7 +248,13 @@ const GameApp: React.FC = () => {
       case 'archive':
         return <ArchiveOfNumbersLevel onComplete={() => setCurrentScreen('map')} />;
       case 'map':
-        return <MapScreen onKingdomSelect={handleStartKingdomFromMap} onBossSelect={handleStartBoss} />;
+        return (
+          <MapScreen
+            onArchiveSelect={() => setCurrentScreen('archive')}
+            onKingdomSelect={handleStartKingdomFromMap}
+            onBossSelect={handleStartBoss}
+          />
+        );
       case 'level': {
         const level = getCurrentLevel();
         if (!level) return <WelcomeScreen />;

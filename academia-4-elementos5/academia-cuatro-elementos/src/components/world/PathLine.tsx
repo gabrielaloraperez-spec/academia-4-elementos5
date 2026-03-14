@@ -25,12 +25,11 @@ export const PathLine: React.FC<PathLineProps> = ({ from, to, unlocked }) => {
       />
 
       {unlocked && (
-        <image
-          href="https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds/path-glow.png"
-          x={`${midX - 1.5}%`}
-          y={`${midY - 1.5}%`}
-          width="3%"
-          height="3%"
+        <circle
+          cx={`${midX}%`}
+          cy={`${midY}%`}
+          r="1.8"
+          fill="rgba(110, 231, 255, 0.9)"
           className="animate-path-flow"
         />
       )}

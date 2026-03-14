@@ -33,7 +33,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   paths,
   onSelectKingdom,
   overlays,
-  backgroundImage = 'https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds/world-map.png',
+  backgroundImage = '/assets/backgrounds/world-map.svg',
 }) => {
   const kingdomById = new Map(kingdoms.map((kingdom) => [kingdom.kingdomId, kingdom]));
 

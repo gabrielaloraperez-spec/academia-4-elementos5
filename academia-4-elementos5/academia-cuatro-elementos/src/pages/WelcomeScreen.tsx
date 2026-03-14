@@ -110,7 +110,7 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'cover') {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-end justify-center p-4 md:p-8" style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.png)' }}>
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-end justify-center p-4 md:p-8" style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.svg)' }}>
         <div className="w-full max-w-2xl text-center rounded-3xl border border-white/30 bg-slate-900/45 backdrop-blur-md p-6 md:p-8">
           <p className="text-cyan-100 text-base md:text-lg leading-relaxed">
             El equilibrio del mundo depende de quienes entienden el poder de los números.
@@ -129,7 +129,7 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'profile') {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: 'url(/assets/backgrounds/story-bg.png), url(/assets/backgrounds/story-bg.svg)' }}>
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.svg)' }}>
         <div className="max-w-md w-full">
           <div className="text-center mb-6">
             <div className="text-6xl mt-2">{selectedAvatar}</div>
@@ -191,7 +191,7 @@ export const WelcomeScreen: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-background-float" style={{ backgroundImage: 'url(/assets/backgrounds/story-bg.png), url(/assets/backgrounds/story-bg.svg)' }} />
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-background-float" style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.svg)' }} />
       <div className="absolute inset-0 fog-layer" />
       <ParticleLayer variant="air" />
 
