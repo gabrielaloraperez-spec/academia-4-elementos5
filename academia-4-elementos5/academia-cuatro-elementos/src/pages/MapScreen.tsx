@@ -16,7 +16,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onKingdomSelect, onBossSel
   const earthUnlocked = state.unlockedLevels.includes(3);
   const waterUnlocked = state.unlockedLevels.includes(4);
   const waterCompleted = state.unlockedLevels.includes(5);
-  const bossUnlocked = waterCompleted && state.knowledgeRoomsCompleted >= 1;
+  const bossUnlocked = waterCompleted && state.knowledgeRoomsCompleted >= 4;
 
   const ASSET_BASE = 'https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds';
 
