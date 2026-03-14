@@ -268,7 +268,11 @@ const GameApp: React.FC = () => {
             level={challengeLevel}
             onComplete={() => {
               completeLevel(challengeLevelId, pendingPerfectChallenge);
-              setCurrentScreen('knowledge');
+              if (challengeLevelId === 4) {
+                setCurrentScreen('knowledge');
+                return;
+              }
+              setCurrentScreen('map');
             }}
             onFail={() => {
               resetLevel();
