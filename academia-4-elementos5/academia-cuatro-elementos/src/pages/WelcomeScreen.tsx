@@ -111,15 +111,18 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'cover') {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-end justify-center p-4 md:p-8" style={{ backgroundImage: `url(${STORY_BACKGROUND_URL})` }}>
-        <div className="w-full max-w-2xl text-center rounded-3xl border border-white/30 bg-slate-900/45 backdrop-blur-md p-6 md:p-8">
-          <p className="text-cyan-100 text-base md:text-lg leading-relaxed">
+      <div
+        className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4"
+        style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.png)' }}
+      >
+        <div className="w-full max-w-2xl text-center">
+          <p className="text-white text-lg md:text-2xl leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
             El equilibrio del mundo depende de quienes entienden el poder de los números.
           </p>
 
           <button
             onClick={() => setStep('profile')}
-            className="mt-6 px-10 py-4 rounded-2xl text-lg font-bold text-white bg-white/20 hover:bg-white/30 border border-white/40 transition-all duration-300"
+            className="mt-8 px-10 py-4 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-orange-500 via-amber-500 to-blue-500 hover:shadow-[0_0_24px_rgba(59,130,246,0.55)] transition-all duration-300"
           >
             Comenzar aventura
           </button>
