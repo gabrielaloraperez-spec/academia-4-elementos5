@@ -9,46 +9,46 @@ type IntroStep = 'cover' | 'profile' | 'story';
 
 const storyCards = [
   {
-    title: 'The Balance of the World',
-    text: 'Since the beginning of time, the four elements have shaped the world.',
+    title: 'El equilibrio del mundo',
+    text: 'Desde el inicio de los tiempos, los cuatro elementos han moldeado el mundo.',
   },
   {
-    title: 'Ancient Knowledge',
-    text: 'The ancient sages discovered a secret: the balance of the elements is guided by mathematics.',
+    title: 'Conocimiento ancestral',
+    text: 'Los antiguos sabios descubrieron un secreto: el equilibrio de los elementos se guía con matemáticas.',
   },
   {
-    title: 'The First Power',
-    text: '🔥 Fire, origin of all things, gave birth to Addition — the power to create and grow.',
+    title: 'El primer poder',
+    text: '🔥 Fuego, origen de todo, dio vida a la Suma — el poder de crear y hacer crecer.',
   },
   {
-    title: 'The Second Power',
-    text: '🌬 Air, symbol of movement and balance, gave birth to Subtraction — the art of restoring equilibrium.',
+    title: 'El segundo poder',
+    text: '🌬 Aire, símbolo de movimiento y equilibrio, dio vida a la Resta — el arte de restaurar la armonía.',
   },
   {
-    title: 'The Third Power',
-    text: '🌱 Earth, mother and provider, gave birth to Multiplication — the power of expansion.',
+    title: 'El tercer poder',
+    text: '🌱 Tierra, madre y proveedora, dio vida a la Multiplicación — el poder de la expansión.',
   },
   {
-    title: 'The Fourth Power',
-    text: '💧 Water, the shaping flow, gave birth to Division — the power of precision and distribution.',
+    title: 'El cuarto poder',
+    text: '💧 Agua, flujo que da forma, dio vida a la División — el poder de la precisión y la distribución.',
   },
   {
-    title: 'The Tower of Time',
-    text: 'When the elements fell into conflict, the ancients built the Tower of Time to protect the balance of the world.',
+    title: 'La Torre del Tiempo',
+    text: 'Cuando los elementos entraron en conflicto, los antiguos construyeron la Torre del Tiempo para proteger el equilibrio del mundo.',
   },
   {
-    title: 'The Four Realms',
-    text: 'Only those who master the four mathematical realms may enter the tower and uncover its secrets.',
+    title: 'Los cuatro reinos',
+    text: 'Solo quienes dominen los cuatro reinos matemáticos podrán entrar en la torre y revelar sus secretos.',
   },
   {
-    title: 'Your Journey',
-    text: 'Today your training begins. In each realm, a master will test your knowledge.',
+    title: 'Tu travesía',
+    text: 'Hoy comienza tu entrenamiento. En cada reino, un maestro pondrá a prueba tu conocimiento.',
   },
   {
-    title: 'The Destiny',
-    text: 'If you succeed, you will become a Guardian of Balance.',
+    title: 'El destino',
+    text: 'Si triunfas, te convertirás en un Guardián del Equilibrio.',
   },
-];
+]
 
 export const WelcomeScreen: React.FC = () => {
   const { setPlayerInfo, state } = useGame();
@@ -178,7 +178,7 @@ export const WelcomeScreen: React.FC = () => {
                 : 'bg-gray-300 cursor-not-allowed'
                 }`}
             >
-              Continue
+              Continuar historia
             </button>
           </div>
         </div>
@@ -211,7 +211,7 @@ export const WelcomeScreen: React.FC = () => {
             onClick={handleStart}
             className="px-10 py-4 rounded-2xl text-lg md:text-xl font-bold text-white bg-indigo-700/85 hover:bg-indigo-600 transition-all duration-300 border border-indigo-200/40"
           >
-            Begin Your Journey
+            Comenzar tu viaje
           </button>
         )}
       </div>
