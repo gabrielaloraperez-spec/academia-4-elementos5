@@ -8,7 +8,8 @@ import {
   KnowledgeRoom,
   BossScreen,
   GameOverScreen,
-  DomainChallengeScreen
+  DomainChallengeScreen,
+  ArchiveOfNumbersLevel
 } from './pages';
 import { levels } from './data/gameData';
 import { useGameState } from './hooks/useGameState';
@@ -98,7 +99,7 @@ const GameApp: React.FC = () => {
 
   useEffect(() => {
     if (state.playerName && currentScreen === 'welcome') {
-      setCurrentScreen('map');
+      setCurrentScreen('archive');
     }
   }, [state.playerName, currentScreen]);
 
@@ -244,6 +245,8 @@ const GameApp: React.FC = () => {
     switch (currentScreen) {
       case 'welcome':
         return <WelcomeScreen />;
+      case 'archive':
+        return <ArchiveOfNumbersLevel onComplete={() => setCurrentScreen('map')} />;
       case 'map':
         return <MapScreen onKingdomSelect={handleStartKingdomFromMap} onBossSelect={handleStartBoss} />;
       case 'level': {
@@ -300,7 +303,7 @@ const GameApp: React.FC = () => {
     <div className="min-h-screen relative">
       {renderScreen()}
 
-      {state.playerName && currentScreen !== 'map' && (
+      {state.playerName && currentScreen !== 'map' && currentScreen !== 'archive' && (
         <button
           onClick={handleBackToMapAnytime}
           className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-black/70 text-white font-semibold border border-white/20 hover:bg-black/85"
