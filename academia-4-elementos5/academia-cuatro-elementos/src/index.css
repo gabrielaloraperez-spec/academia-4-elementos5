@@ -62,6 +62,18 @@
   .scale-102 {
     transform: scale(1.02);
   }
+
+
+  .animate-path-flow {
+    fill: rgba(110, 231, 255, 0.95);
+    filter: drop-shadow(0 0 6px rgba(110, 231, 255, 0.9));
+    animation: path-flow 2.8s ease-in-out infinite;
+  }
+
+  @keyframes path-flow {
+    0%, 100% { opacity: 0.45; transform-box: fill-box; transform-origin: center; transform: scale(0.9); }
+    50% { opacity: 1; transform-box: fill-box; transform-origin: center; transform: scale(1.15); }
+  }
 }
 
 /* Custom scrollbar */
