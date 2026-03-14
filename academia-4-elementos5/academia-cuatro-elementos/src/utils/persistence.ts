@@ -8,7 +8,7 @@ const GAME_STATE_KEY = 'game-state';
 const APP_SESSION_KEY = 'app-session';
 
 export interface AppSessionState {
-  currentScreen: 'welcome' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
+  currentScreen: 'welcome' | 'archive' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
   currentLevelId: number;
   challengeLevelId: number;
   pendingPerfectChallenge: boolean;

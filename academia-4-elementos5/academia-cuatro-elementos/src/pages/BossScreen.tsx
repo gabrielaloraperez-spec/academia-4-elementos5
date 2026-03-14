@@ -12,7 +12,7 @@ interface BossScreenProps {
 const BOSS_TIME = 120; // seconds
 
 const bossBackgroundStyle = {
-  backgroundImage: "linear-gradient(rgba(69,10,10,0.72), rgba(88,28,135,0.72)), url(/assets/backgrounds/boss-bg.png), url(/assets/backgrounds/boss-bg.svg)",
+  backgroundImage: "linear-gradient(rgba(69,10,10,0.72), rgba(88,28,135,0.72)), url(/assets/backgrounds/boss-bg.svg)",
 } as const;
 
 export const BossScreen: React.FC<BossScreenProps> = ({ onComplete, onGameOver }) => {
