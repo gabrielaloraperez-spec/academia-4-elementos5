@@ -6,7 +6,6 @@ import { playUiClick } from '../utils/sound';
 
 interface MapScreenProps {
   onKingdomSelect: (levelId: number) => void;
-  onKnowledgeSelect: () => void;
   onBossSelect: () => void;
 }
 
@@ -20,15 +19,15 @@ interface MapNode {
   onSelect: () => void;
 }
 
-export const MapScreen: React.FC<MapScreenProps> = ({ onKingdomSelect, onKnowledgeSelect, onBossSelect }) => {
+export const MapScreen: React.FC<MapScreenProps> = ({ onKingdomSelect, onBossSelect }) => {
   const { state } = useGame();
 
   const fireUnlocked = state.unlockedLevels.includes(1);
   const airUnlocked = state.unlockedLevels.includes(2);
   const earthUnlocked = state.unlockedLevels.includes(3);
   const waterUnlocked = state.unlockedLevels.includes(4);
-  const knowledgeUnlocked = state.unlockedLevels.includes(5);
-  const bossUnlocked = knowledgeUnlocked && state.knowledgeRoomsCompleted >= 4;
+  const waterCompleted = state.unlockedLevels.includes(5);
+  const bossUnlocked = waterCompleted && state.knowledgeRoomsCompleted >= 1;
 
   const mapNodes: MapNode[] = [
     {
@@ -72,21 +71,12 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onKingdomSelect, onKnowled
       icon: '🌊',
       position: { x: 68, y: 36 },
       unlocked: waterUnlocked,
-      completed: knowledgeUnlocked,
+      completed: waterCompleted,
       onSelect: () => onKingdomSelect(4),
     },
     {
-      id: 6,
-      title: 'Sala del Conocimiento',
-      icon: '🏛️',
-      position: { x: 82, y: 28 },
-      unlocked: knowledgeUnlocked,
-      completed: bossUnlocked,
-      onSelect: onKnowledgeSelect,
-    },
-    {
       id: 5,
-      title: 'Boss Final',
+      title: 'Torre del Tiempo',
       icon: '👑',
       position: { x: 92, y: 18 },
       unlocked: bossUnlocked,
@@ -100,8 +90,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onKingdomSelect, onKnowled
     { from: 1, to: 2, unlocked: airUnlocked },
     { from: 2, to: 3, unlocked: earthUnlocked },
     { from: 3, to: 4, unlocked: waterUnlocked },
-    { from: 4, to: 6, unlocked: knowledgeUnlocked },
-    { from: 6, to: 5, unlocked: bossUnlocked },
+    { from: 4, to: 5, unlocked: bossUnlocked },
   ];
 
   return (
@@ -113,7 +102,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onKingdomSelect, onKnowled
         <div className="mb-4 rounded-2xl border border-white/25 bg-slate-950/55 backdrop-blur px-4 py-3 text-white flex items-center justify-between">
           <div>
             <h1 className="text-lg md:text-2xl font-extrabold">Mapa del mundo</h1>
-            <p className="text-xs md:text-sm text-white/80">Inicio → Fuego → Aire → Tierra → Agua → Conocimiento → Boss</p>
+            <p className="text-xs md:text-sm text-white/80">Inicio → Fuego → Aire → Tierra → Agua → Torre del Tiempo</p>
           </div>
           <div className="text-right">
             <p className="text-xs text-white/70">Guardían</p>
