@@ -4,6 +4,7 @@ import { Level } from '../data/gameData';
 import { ProgressBar, Hearts, ScoreDisplay, AnswerButton, Feedback, AbilityButton, HintDisplay } from '../components/game/GameComponents';
 import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
 import { getKingdomTheme, withSvgFallback } from '../styles/kingdomThemes';
+import { ParticleLayer } from '../components/effects/ParticleLayer';
 
 interface LevelScreenProps {
   level: Level;
@@ -67,6 +68,15 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
   const problem = level.problems[currentProblem];
   const kingdomTheme = getKingdomTheme(level.operation);
   const sublevel = sublevels[currentSublevel];
+
+  const particleVariantByOperation: Record<string, 'fire' | 'air' | 'earth' | 'water'> = {
+    addition: 'fire',
+    subtraction: 'air',
+    multiplication: 'earth',
+    division: 'water',
+  };
+
+  const particleVariant = particleVariantByOperation[level.operation] ?? 'air';
 
   const handleSublevelFailure = () => {
     if (sublevel.id === 1) {
@@ -217,8 +227,12 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
 
   if (gameOverConfig) {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.58), rgba(15,23,42,0.4)), ${withSvgFallback(kingdomTheme.background)}` }}>
-        <div className="max-w-xl w-full bg-white rounded-3xl p-8 text-center shadow-2xl border-2" style={{ borderColor: level.color }}>
+      <div className="min-h-screen w-full relative overflow-hidden flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-background-float" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.58), rgba(15,23,42,0.4)), ${withSvgFallback(kingdomTheme.background)}` }} />
+        <div className="absolute inset-0 fog-layer" />
+        <ParticleLayer variant={particleVariant} />
+
+        <div className="relative z-10 max-w-xl w-full bg-white rounded-3xl p-8 text-center border-2" style={{ borderColor: level.color }}>
           <div className="text-6xl mb-4">💫</div>
           <h2 className="text-3xl font-bold mb-3" style={{ color: level.color }}>Game Over</h2>
           <p className="text-gray-700 text-lg leading-relaxed mb-6">{gameOverConfig.message}</p>
@@ -236,8 +250,12 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
 
   if (showTransition) {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.58), rgba(15,23,42,0.4)), ${withSvgFallback(kingdomTheme.background)}` }}>
-        <div className="max-w-xl w-full rounded-3xl p-8 text-center shadow-2xl bg-white">
+      <div className="min-h-screen w-full relative overflow-hidden flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-background-float" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.58), rgba(15,23,42,0.4)), ${withSvgFallback(kingdomTheme.background)}` }} />
+        <div className="absolute inset-0 fog-layer" />
+        <ParticleLayer variant={particleVariant} />
+
+        <div className="relative z-10 max-w-xl w-full rounded-3xl p-8 text-center bg-white">
           <div className="text-6xl mb-4">{level.icon}</div>
           <h2 className="text-3xl font-bold mb-1" style={{ color: level.color }}>{level.name}</h2>
           <p className="font-semibold mb-4" style={{ color: level.color }}>Subnivel {sublevel.id}: {sublevel.name}</p>
@@ -256,7 +274,12 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
   }
 
   return (
-    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex flex-col" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.58), rgba(15,23,42,0.4)), ${withSvgFallback(kingdomTheme.background)}` }}>
+    <div className="min-h-screen w-full relative overflow-hidden">
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-background-float" style={{ backgroundImage: `linear-gradient(rgba(15,23,42,0.58), rgba(15,23,42,0.4)), ${withSvgFallback(kingdomTheme.background)}` }} />
+      <div className="absolute inset-0 fog-layer" />
+      <ParticleLayer variant={particleVariant} />
+
+      <div className="relative z-10 min-h-screen flex flex-col">
       <div className="p-4">
         <div className="max-w-md mx-auto">
           <div className="flex items-center justify-between mb-4">
@@ -349,6 +372,7 @@ export const LevelScreen: React.FC<LevelScreenProps> = ({ level, onComplete, onE
           message={feedback === 'incorrect' ? `La respuesta era ${problem?.answer}` : undefined}
         />
       )}
+      </div>
     </div>
   );
 };
