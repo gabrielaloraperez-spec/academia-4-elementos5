@@ -112,17 +112,19 @@ export const WelcomeScreen: React.FC = () => {
   if (step === 'cover') {
     return (
       <div
-        className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4"
+        className="min-h-screen w-full relative bg-cover bg-center bg-no-repeat overflow-hidden"
         style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.png)' }}
       >
-        <div className="w-full max-w-2xl text-center">
-          <p className="text-white text-lg md:text-2xl leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
+        <div className="absolute inset-x-4 bottom-[36%] md:bottom-[34%] flex justify-center pointer-events-none">
+          <p className="max-w-3xl text-center text-white text-base md:text-2xl leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
             El equilibrio del mundo depende de quienes entienden el poder de los números.
           </p>
+        </div>
 
+        <div className="absolute inset-x-0 bottom-[24%] md:bottom-[23%] flex justify-center">
           <button
             onClick={() => setStep('profile')}
-            className="mt-8 px-10 py-4 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-orange-500 via-amber-500 to-blue-500 hover:shadow-[0_0_24px_rgba(59,130,246,0.55)] transition-all duration-300"
+            className="px-10 py-4 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-orange-500 via-amber-500 to-blue-500 hover:shadow-[0_0_24px_rgba(59,130,246,0.55)] transition-all duration-300"
           >
             Comenzar aventura
           </button>
