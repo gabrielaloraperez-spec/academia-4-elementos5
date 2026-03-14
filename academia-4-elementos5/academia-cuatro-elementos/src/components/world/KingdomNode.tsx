@@ -9,6 +9,7 @@ interface KingdomNodeProps {
   kingdomId: number;
   unlocked: boolean;
   icon: string;
+  nodeImageUrl?: string;
   position: MapPosition;
   title: string;
   completed?: boolean;
@@ -19,6 +20,7 @@ export const KingdomNode: React.FC<KingdomNodeProps> = ({
   kingdomId,
   unlocked,
   icon,
+  nodeImageUrl,
   position,
   title,
   completed = false,
@@ -38,18 +40,19 @@ export const KingdomNode: React.FC<KingdomNodeProps> = ({
       >
         <div
           className={[
-            'h-full w-full rounded-full border-2 flex items-center justify-center text-2xl md:text-3xl transition-all duration-300 shadow-xl',
+            'h-full w-full rounded-full border-2 flex items-center justify-center text-2xl md:text-3xl transition-all duration-300 animate-float-air',
             unlocked
-              ? 'bg-slate-900/90 border-cyan-300/80 text-white animate-float-air ring-4 ring-cyan-300/30 group-hover:scale-110 group-hover:border-cyan-200 group-hover:ring-cyan-200/50'
-              : 'bg-slate-700/90 border-slate-500 text-slate-300 grayscale opacity-80',
+              ? 'border-cyan-200 bg-slate-900/45 animate-pulse-glow group-hover:scale-105'
+              : 'border-slate-500 bg-slate-900/35 grayscale opacity-65',
           ].join(' ')}
+          style={{ animationDelay: `${kingdomId * 0.15}s` }}
         >
-          {unlocked ? icon : '🔒'}
+          {nodeImageUrl ? <img src={nodeImageUrl} alt="" className="h-full w-full object-cover" /> : (unlocked ? icon : '🔒')}
         </div>
       </button>
 
       <div className="pointer-events-none absolute top-full left-1/2 mt-2 -translate-x-1/2 text-center whitespace-nowrap">
-        <p className={`text-xs font-semibold ${unlocked ? 'text-white' : 'text-white/55'}`}>{title}</p>
+        <p className={`text-xs font-semibold ${unlocked ? 'text-white' : 'text-white/70'}`}>{title}</p>
         {completed && <p className="text-[10px] text-emerald-300">Completado</p>}
       </div>
     </div>
