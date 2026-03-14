@@ -289,7 +289,7 @@ export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ on
 
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-cover bg-center animate-background-float" style={{ backgroundImage: 'url(/assets/backgrounds/knowledge-room.svg)' }} />
+      <div className="absolute inset-0 bg-cover bg-center animate-background-float" style={{ backgroundImage: 'url(/assets/backgrounds/knowledge-room.png), url(/assets/backgrounds/knowledge-room.svg)' }} />
       <div className="absolute inset-0 fog-layer" />
       <ParticleLayer variant="air" />
 

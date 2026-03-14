@@ -43,7 +43,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onArchiveSelect, onKingdom
     if (!selected || !selected.unlocked) return;
 
     playUiClick();
-https://github.com/gabrielaloraperez-spec/academia-4-elementos5/pull/41/conflict?name=academia-4-elementos5%252Facademia-cuatro-elementos%252Fsrc%252Fpages%252FMapScreen.tsx&ancestor_oid=20ed163a111a4f9ad0acfe4de47d8510822cfaa0&base_oid=4ed2a1a4d24d6564e2163cb5595c1f126cec5da9&head_oid=0b19b3d82160bad1970de6be56dae02b645fb523
+
     if (kingdomId === 0) {
       onArchiveSelect();
       return;
