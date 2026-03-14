@@ -81,7 +81,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (newState.streak >= 10 && !newAchievements.includes('streak_10')) {
       newAchievements.push('streak_10');
     }
-    if (newState.knowledgeRoomsCompleted >= 4 && !newAchievements.includes('all_knowledge')) {
+    if (newState.knowledgeRoomsCompleted >= 1 && !newAchievements.includes('all_knowledge')) {
       newAchievements.push('all_knowledge');
     }
     if (!newState.isBossUnlocked && newState.unlockedLevels.includes(5) && !newAchievements.includes('boss_killer')) {
