@@ -181,9 +181,7 @@ const GameApp: React.FC = () => {
   const handleStartKingdomFromMap = (levelId: number) => {
     startLevel(levelId);
     setCurrentLevelId(levelId);
-    setChallengeLevelId(levelId);
-    setPendingPerfectChallenge(false);
-    setCurrentScreen('domain_challenge');
+    setCurrentScreen('level');
   };
 
 
