@@ -1,16 +1,53 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { ParticleLayer } from '../components/effects/ParticleLayer';
+import { StoryCard } from '../components/ui/StoryCard';
 import { useGame } from '../context/useGame';
 
 const AVATARS = ['🧙', '🧝', '🧛', '🧚', '🦸', '🦹', '🧑‍🚀', '🐉'];
 
 type IntroStep = 'cover' | 'profile' | 'story';
 
-const storyBlocks = [
-  'Hace mucho tiempo, los números eran simples símbolos. Hasta que alguien descubrió que podían moldear la realidad.',
-  'La Suma dio origen a la creación.\nLa Resta enseñó el arte del equilibrio.\nLa Multiplicación expandió el poder.\nLa División reveló la precisión.',
-  'Pero en el centro de todo se alza la Torre del Tiempo. Solo quienes dominen los cuatro reinos podrán desafiarla.',
-  'Hoy comienza tu entrenamiento.\nNo estarás solo.\nTu avatar será tu compañero en este viaje.',
-  '¿Estás listo para convertirte en Guardián del Equilibrio?'
+const storyCards = [
+  {
+    title: 'The Balance of the World',
+    text: 'Since the beginning of time, the four elements have shaped the world.',
+  },
+  {
+    title: 'Ancient Knowledge',
+    text: 'The ancient sages discovered a secret: the balance of the elements is guided by mathematics.',
+  },
+  {
+    title: 'The First Power',
+    text: '🔥 Fire, origin of all things, gave birth to Addition — the power to create and grow.',
+  },
+  {
+    title: 'The Second Power',
+    text: '🌬 Air, symbol of movement and balance, gave birth to Subtraction — the art of restoring equilibrium.',
+  },
+  {
+    title: 'The Third Power',
+    text: '🌱 Earth, mother and provider, gave birth to Multiplication — the power of expansion.',
+  },
+  {
+    title: 'The Fourth Power',
+    text: '💧 Water, the shaping flow, gave birth to Division — the power of precision and distribution.',
+  },
+  {
+    title: 'The Tower of Time',
+    text: 'When the elements fell into conflict, the ancients built the Tower of Time to protect the balance of the world.',
+  },
+  {
+    title: 'The Four Realms',
+    text: 'Only those who master the four mathematical realms may enter the tower and uncover its secrets.',
+  },
+  {
+    title: 'Your Journey',
+    text: 'Today your training begins. In each realm, a master will test your knowledge.',
+  },
+  {
+    title: 'The Destiny',
+    text: 'If you succeed, you will become a Guardian of Balance.',
+  },
 ];
 
 export const WelcomeScreen: React.FC = () => {
@@ -18,6 +55,7 @@ export const WelcomeScreen: React.FC = () => {
   const [step, setStep] = useState<IntroStep>('cover');
   const [name, setName] = useState(state.playerName);
   const [selectedAvatar, setSelectedAvatar] = useState(state.avatar || AVATARS[0]);
+  const [currentStoryCard, setCurrentStoryCard] = useState(0);
 
   const guardianLabel = useMemo(() => {
     if (!name.trim()) return 'Guardián';
@@ -28,6 +66,15 @@ export const WelcomeScreen: React.FC = () => {
     if (name.trim()) {
       setPlayerInfo(name.trim(), selectedAvatar);
     }
+  };
+
+  const handleStoryAdvance = () => {
+    if (currentStoryCard < storyCards.length - 1) {
+      setCurrentStoryCard((prev) => prev + 1);
+      return;
+    }
+
+    handleStart();
   };
 
   useEffect(() => {
@@ -45,7 +92,7 @@ export const WelcomeScreen: React.FC = () => {
           return;
         }
 
-        handleStart();
+        handleStoryAdvance();
       }
 
       if (step === 'profile' && (event.key === 'ArrowRight' || event.key === 'ArrowLeft')) {
@@ -59,7 +106,7 @@ export const WelcomeScreen: React.FC = () => {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [step, selectedAvatar, name]);
+  }, [step, selectedAvatar, name, currentStoryCard]);
 
   if (step === 'cover') {
     return (
@@ -82,7 +129,7 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'profile') {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: 'url(https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds/story-bg.png)' }}>
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: 'url(/assets/backgrounds/story-bg.png), url(/assets/backgrounds/story-bg.svg)' }}>
         <div className="max-w-md w-full">
           <div className="text-center mb-6">
             <div className="text-6xl mt-2">{selectedAvatar}</div>
@@ -131,7 +178,7 @@ export const WelcomeScreen: React.FC = () => {
                 : 'bg-gray-300 cursor-not-allowed'
                 }`}
             >
-              Continuar historia
+              Continue
             </button>
           </div>
         </div>
@@ -139,27 +186,34 @@ export const WelcomeScreen: React.FC = () => {
     );
   }
 
+  const currentCard = storyCards[currentStoryCard];
+  const isFinalCard = currentStoryCard === storyCards.length - 1;
+
   return (
-    <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: 'url(https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds/story-bg.png)' }}>
-      <div className="w-full max-w-3xl bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-6 md:p-10">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-white text-center mb-8">Crónica de la Academia</h2>
+    <div className="min-h-screen w-full relative overflow-hidden flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-background-float" style={{ backgroundImage: 'url(/assets/backgrounds/story-bg.png), url(/assets/backgrounds/story-bg.svg)' }} />
+      <div className="absolute inset-0 fog-layer" />
+      <ParticleLayer variant="air" />
 
-        <div className="space-y-4">
-          {storyBlocks.map((block, index) => (
-            <div key={index} className="bg-black/20 rounded-2xl p-4 md:p-5 border border-white/10">
-              <p className="text-cyan-50 whitespace-pre-line leading-relaxed">{block}</p>
-            </div>
-          ))}
-        </div>
+      <div className="relative z-10 w-full flex flex-col items-center gap-6">
+        <StoryCard
+          key={currentStoryCard}
+          title={currentCard.title}
+          text={currentCard.text}
+          onClick={handleStoryAdvance}
+          isVisible={true}
+          isFinal={isFinalCard}
+        />
 
-        <div className="text-center mt-8">
+        {isFinalCard && (
           <button
+            type="button"
             onClick={handleStart}
-            className="px-10 py-4 rounded-2xl text-lg font-bold text-white bg-white/20 hover:bg-white/30 border border-white/40 transition-all duration-300"
+            className="px-10 py-4 rounded-2xl text-lg md:text-xl font-bold text-white bg-indigo-700/85 hover:bg-indigo-600 transition-all duration-300 border border-indigo-200/40"
           >
-            🎮 Iniciar aventura
+            Begin Your Journey
           </button>
-        </div>
+        )}
       </div>
     </div>
   );

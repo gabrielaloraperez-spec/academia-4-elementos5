@@ -104,6 +104,20 @@
     50% { transform: translate3d(var(--drift-x, 10px), -16px, 0); opacity: 0.9; }
   }
 
+
+  .story-card-glow {
+    box-shadow: 0 0 0 1px rgba(253, 230, 138, 0.35), 0 12px 36px rgba(15, 23, 42, 0.28);
+  }
+
+  .story-card-pulse {
+    animation: story-pulse 2.2s ease-in-out infinite;
+  }
+
+  @keyframes story-pulse {
+    0%, 100% { opacity: 0.45; transform: scale(0.9); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
   @keyframes path-flow {
     0%, 100% { opacity: 0.45; transform-box: fill-box; transform-origin: center; transform: scale(0.9); }
     50% { opacity: 1; transform-box: fill-box; transform-origin: center; transform: scale(1.15); }
