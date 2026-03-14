@@ -62,6 +62,52 @@
   .scale-102 {
     transform: scale(1.02);
   }
+
+
+  .animate-path-flow {
+    filter: drop-shadow(0 0 6px rgba(110, 231, 255, 0.9));
+    animation: path-flow 2.8s ease-in-out infinite;
+  }
+
+
+  .animate-background-float {
+    animation: backgroundFloat 20s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .fog-layer {
+    opacity: 0.1;
+    mix-blend-mode: screen;
+    background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.5) 45%, transparent 100%);
+    animation: fog-drift 26s linear infinite;
+    will-change: transform;
+  }
+
+  .particle-drift {
+    animation: particle-drift 16s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  @keyframes backgroundFloat {
+    0% { transform: scale(1.02) translateY(0px); }
+    50% { transform: scale(1.05) translateY(-10px); }
+    100% { transform: scale(1.02) translateY(0px); }
+  }
+
+  @keyframes fog-drift {
+    0% { transform: translateX(-8%); }
+    100% { transform: translateX(8%); }
+  }
+
+  @keyframes particle-drift {
+    0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.35; }
+    50% { transform: translate3d(var(--drift-x, 10px), -16px, 0); opacity: 0.9; }
+  }
+
+  @keyframes path-flow {
+    0%, 100% { opacity: 0.45; transform-box: fill-box; transform-origin: center; transform: scale(0.9); }
+    50% { opacity: 1; transform-box: fill-box; transform-origin: center; transform: scale(1.15); }
+  }
 }
 
 /* Custom scrollbar */
