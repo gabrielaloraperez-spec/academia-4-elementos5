@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { ParticleLayer } from '../components/effects/ParticleLayer';
+import { Hearts, ManaBar, ProgressBar, ScoreDisplay } from '../components/game/GameComponents';
+import { useGame } from '../context/useGame';
 
 interface ArchiveOfNumbersLevelProps {
   onComplete: () => void;
@@ -117,11 +119,12 @@ type ArchivePhase = 'intro' | 'explanation' | 'quiz' | 'complete';
 const DialogueAvatar: React.FC = () => (
   <div className="w-full md:w-72 md:flex-shrink-0">
     <div className="rounded-3xl border border-amber-100/60 bg-slate-900/70 p-4 shadow-[0_0_30px_rgba(250,204,21,0.2)]">
-      <div className="h-56 w-full rounded-2xl border border-amber-200/60 bg-gradient-to-b from-indigo-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center">
-        <span className="text-6xl" aria-hidden>🧙</span>
-        <span className="mt-3 text-amber-100 font-semibold">Numerius</span>
-      </div>
-      <p className="mt-3 text-center text-amber-100 font-semibold">Maestro Numerius</p>
+      <img
+        src="https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds/guardian-archive.png"
+        alt="Maestro Numerius"
+        className="h-56 w-full rounded-2xl border border-amber-200/60 object-cover"
+      />
+      <p className="mt-3 text-center text-amber-100 font-bold">Maestro Numerius</p>
     </div>
   </div>
 );
@@ -134,13 +137,13 @@ const ExplanationCard: React.FC<{
   buttonLabel: string;
   onNext: () => void;
 }> = ({ title, step, stepNumber, totalSteps, buttonLabel, onNext }) => (
-  <div className="parchment animate-[fadeIn_.35s_ease] rounded-3xl border border-amber-500/40 p-6 text-amber-950 shadow-[0_0_25px_rgba(251,191,36,0.25)]">
+  <div className="animate-[fadeIn_.35s_ease] rounded-3xl border border-white/70 bg-white p-6 text-slate-800 shadow-2xl">
     <p className="text-xs font-bold tracking-wide uppercase">{title}</p>
     <p className="mt-2 text-sm font-semibold">{step.speaker}</p>
     <p className="mt-3 text-lg leading-relaxed">{step.text}</p>
     <div className="mt-5 flex items-center justify-between">
       <span className="text-xs font-semibold">Tarjeta {stepNumber} de {totalSteps}</span>
-      <button type="button" onClick={onNext} className="rounded-xl bg-slate-900 px-4 py-2 text-amber-50 font-semibold hover:bg-slate-700">
+      <button type="button" onClick={onNext} className="rounded-xl bg-indigo-600 px-4 py-2 text-white font-semibold hover:bg-indigo-700">
         {buttonLabel}
       </button>
     </div>
@@ -157,7 +160,7 @@ const QuizCard: React.FC<{
   onSelect: (index: number) => void;
   onNext: () => void;
 }> = ({ sectionTitle, activity, activityNumber, totalActivities, selectedIndex, showFeedback, onSelect, onNext }) => (
-  <div className="parchment animate-[fadeIn_.35s_ease] rounded-3xl border border-amber-500/40 p-6 text-amber-950 shadow-[0_0_25px_rgba(251,191,36,0.25)]">
+  <div className="animate-[fadeIn_.35s_ease] rounded-3xl border border-white/70 bg-white p-6 text-slate-800 shadow-2xl">
     <p className="text-xs font-bold tracking-wide uppercase">{sectionTitle}</p>
     <p className="mt-2 text-sm font-semibold">Pregunta {activityNumber} de {totalActivities}</p>
     <p className="mt-3 text-lg">{activity.question}</p>
@@ -200,7 +203,7 @@ const QuizCard: React.FC<{
         type="button"
         onClick={onNext}
         disabled={!showFeedback}
-        className={`rounded-xl px-4 py-2 font-semibold ${showFeedback ? 'bg-slate-900 text-amber-50 hover:bg-slate-700' : 'bg-slate-300 text-slate-500 cursor-not-allowed'}`}
+        className={`rounded-xl px-4 py-2 font-semibold ${showFeedback ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-slate-300 text-slate-500 cursor-not-allowed'}`}
       >
         Siguiente pregunta
       </button>
@@ -221,7 +224,27 @@ const SectionProgressBar: React.FC<{ sectionIndex: number; totalSections: number
   );
 };
 
+const PowerBar: React.FC<{ power: number }> = ({ power }) => {
+  const normalizedPower = Math.max(0, Math.min(100, power));
+
+  return (
+    <div className="w-full">
+      <div className="flex justify-between text-xs font-semibold mb-1.5 text-amber-200 uppercase tracking-wider">
+        <span>Poder</span>
+        <span>{Math.round(normalizedPower)}%</span>
+      </div>
+      <div className="w-full h-2.5 bg-amber-200/20 rounded-full overflow-hidden">
+        <div
+          className="h-full rounded-full transition-all duration-300 bg-gradient-to-r from-amber-400 to-orange-500"
+          style={{ width: `${normalizedPower}%` }}
+        />
+      </div>
+    </div>
+  );
+};
+
 export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ onComplete }) => {
+  const { state } = useGame();
   const [phase, setPhase] = useState<ArchivePhase>('intro');
   const [introIndex, setIntroIndex] = useState(0);
   const [sectionIndex, setSectionIndex] = useState(0);
@@ -229,9 +252,19 @@ export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ on
   const [activityIndex, setActivityIndex] = useState(0);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [correctCount, setCorrectCount] = useState(0);
 
   const section = sections[sectionIndex];
   const activity = section.activities[activityIndex];
+  const totalQuestions = useMemo(() => sections.reduce((acc, currentSection) => acc + currentSection.activities.length, 0), []);
+
+  const answeredQuestions = useMemo(() => {
+    const completedSections = sections.slice(0, sectionIndex).reduce((acc, currentSection) => acc + currentSection.activities.length, 0);
+    const currentAnswered = phase === 'quiz' ? activityIndex + (showFeedback ? 1 : 0) : 0;
+    return Math.min(totalQuestions, completedSections + currentAnswered + (phase === 'complete' ? section.activities.length : 0));
+  }, [sectionIndex, activityIndex, showFeedback, phase, section.activities.length, totalQuestions]);
+
+  const powerPercent = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
 
   const completionMessage = useMemo(
     () => 'Has aprendido el lenguaje de los números. Ahora estás listo para entrar al Reino de la Energía.',
@@ -273,6 +306,9 @@ export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ on
   const handleSelectAnswer = (index: number) => {
     if (showFeedback) return;
     setSelectedIndex(index);
+    if (index === activity.correctIndex) {
+      setCorrectCount((previous) => previous + 1);
+    }
     setShowFeedback(true);
   };
 
@@ -294,6 +330,27 @@ export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ on
       <ParticleLayer variant="air" />
 
       <div className="relative z-10 w-full max-w-6xl">
+        <div className="mb-4 rounded-2xl border border-white/20 bg-slate-900/55 backdrop-blur-sm p-4 text-white">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl">📚</span>
+              <div>
+                <p className="font-bold">Archivo de los Números</p>
+                <p className="text-xs text-white/80">Entrenamiento inicial antes de los reinos</p>
+              </div>
+            </div>
+            <ScoreDisplay score={state.score} streak={state.streak} />
+          </div>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <ManaBar mana={state.mana} />
+            <PowerBar power={powerPercent} />
+          </div>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <Hearts lives={state.lives} />
+            <ProgressBar current={Math.max(1, answeredQuestions)} total={Math.max(1, totalQuestions)} color="#38bdf8" />
+          </div>
+          <p className="mt-2 text-xs text-white/75">Aciertos: {correctCount}/{totalQuestions} · Respondidas: {answeredQuestions}/{totalQuestions}</p>
+        </div>
         {phase !== 'intro' && phase !== 'complete' && (
           <div className="mb-4">
             <SectionProgressBar sectionIndex={sectionIndex} totalSections={sections.length} />
@@ -340,10 +397,11 @@ export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ on
             )}
 
             {phase === 'complete' && (
-              <div className="parchment animate-[fadeIn_.35s_ease] rounded-3xl border border-amber-500/40 p-6 text-amber-950 shadow-[0_0_25px_rgba(251,191,36,0.25)]">
+              <div className="animate-[fadeIn_.35s_ease] rounded-3xl border border-white/70 bg-white p-6 text-slate-800 shadow-2xl">
                 <p className="text-sm font-semibold">Numerius</p>
                 <p className="mt-3 text-2xl font-extrabold">Excelente trabajo, aprendiz.</p>
                 <p className="mt-3 text-lg">{completionMessage}</p>
+                <p className="mt-2 text-sm font-semibold">Precisión final: {Math.round(powerPercent)}%</p>
                 <div className="mt-6 flex flex-wrap gap-3">
                   <button type="button" onClick={onComplete} className="rounded-xl bg-emerald-700 px-6 py-3 text-emerald-50 font-bold hover:bg-emerald-600">
                     🔥 Entrar al Reino de la Energía

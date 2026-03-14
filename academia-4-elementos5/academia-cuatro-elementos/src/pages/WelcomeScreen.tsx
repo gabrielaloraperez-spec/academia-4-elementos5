@@ -4,6 +4,7 @@ import { StoryCard } from '../components/ui/StoryCard';
 import { useGame } from '../context/useGame';
 
 const AVATARS = ['🧙', '🧝', '🧛', '🧚', '🦸', '🦹', '🧑‍🚀', '🐉'];
+const STORY_BACKGROUND_URL = 'https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds/story-bg.png';
 
 type IntroStep = 'cover' | 'profile' | 'story';
 
@@ -110,15 +111,18 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'cover') {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-end justify-center p-4 md:p-8" style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.png)' }}>
-        <div className="w-full max-w-2xl text-center rounded-3xl border border-white/30 bg-slate-900/45 backdrop-blur-md p-6 md:p-8">
-          <p className="text-cyan-100 text-base md:text-lg leading-relaxed">
+      <div
+        className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4"
+        style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.png)' }}
+      >
+        <div className="w-full max-w-2xl text-center">
+          <p className="text-white text-lg md:text-2xl leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.75)]">
             El equilibrio del mundo depende de quienes entienden el poder de los números.
           </p>
 
           <button
             onClick={() => setStep('profile')}
-            className="mt-6 px-10 py-4 rounded-2xl text-lg font-bold text-white bg-white/20 hover:bg-white/30 border border-white/40 transition-all duration-300"
+            className="mt-8 px-10 py-4 rounded-2xl text-lg font-bold text-white bg-gradient-to-r from-orange-500 via-amber-500 to-blue-500 hover:shadow-[0_0_24px_rgba(59,130,246,0.55)] transition-all duration-300"
           >
             Comenzar aventura
           </button>
@@ -129,8 +133,12 @@ export const WelcomeScreen: React.FC = () => {
 
   if (step === 'profile') {
     return (
-      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.png)' }}>
-        <div className="max-w-md w-full">
+      <div className="min-h-screen w-full relative overflow-hidden flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-background-float" style={{ backgroundImage: `url(${STORY_BACKGROUND_URL})` }} />
+        <div className="absolute inset-0 fog-layer" />
+        <ParticleLayer variant="air" />
+
+        <div className="relative z-10 max-w-md w-full">
           <div className="text-center mb-6">
             <div className="text-6xl mt-2">{selectedAvatar}</div>
           </div>
@@ -191,7 +199,7 @@ export const WelcomeScreen: React.FC = () => {
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-background-float" style={{ backgroundImage: 'url(/assets/backgrounds/welcome-bg.png)' }} />
+      <div className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-background-float" style={{ backgroundImage: `url(${STORY_BACKGROUND_URL})` }} />
       <div className="absolute inset-0 fog-layer" />
       <ParticleLayer variant="air" />
 
