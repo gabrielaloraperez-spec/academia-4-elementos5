@@ -89,7 +89,7 @@ export const kingdomThemes: Record<KingdomOperation, KingdomTheme> = {
     kingdomName: 'Torre del Tiempo',
     elementName: 'Éter',
     icon: '🕰️',
-    background: '/assets/backgrounds/time-tower.png',
+    background: '/assets/backgrounds/time-tower.svg',
     cardGradient: 'from-violet-950 via-purple-900 to-amber-800',
     cardBorder: 'border-amber-300/50',
     cardGlow: 'shadow-[0_16px_36px_-16px_rgba(250,204,21,0.7)]',
