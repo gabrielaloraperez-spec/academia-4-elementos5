@@ -12,12 +12,12 @@ interface MapScreenProps {
 export const MapScreen: React.FC<MapScreenProps> = ({ onArchiveSelect, onKingdomSelect, onBossSelect }) => {
   const { state } = useGame();
 
-  const archiveCompleted = state.unlockedLevels.length > 1 || state.knowledgeRoomsCompleted > 0;
-  const fireUnlocked = archiveCompleted && state.unlockedLevels.includes(1);
-  const airUnlocked = archiveCompleted && state.unlockedLevels.includes(2);
-  const earthUnlocked = archiveCompleted && state.unlockedLevels.includes(3);
-  const waterUnlocked = archiveCompleted && state.unlockedLevels.includes(4);
-  const waterCompleted = archiveCompleted && state.unlockedLevels.includes(5);
+  const archiveCompleted = state.archiveCompleted;
+  const fireUnlocked = archiveCompleted;
+  const airUnlocked = state.unlockedLevels.includes(2);
+  const earthUnlocked = state.unlockedLevels.includes(3);
+  const waterUnlocked = state.unlockedLevels.includes(4);
+  const waterCompleted = state.unlockedLevels.includes(5);
   const bossUnlocked = waterCompleted && state.knowledgeRoomsCompleted >= 4;
   const MAP_BACKGROUND = 'https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds/world-map.png';
 

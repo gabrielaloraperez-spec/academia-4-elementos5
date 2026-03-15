@@ -47,7 +47,7 @@ export const KingdomNode: React.FC<KingdomNodeProps> = ({
           ].join(' ')}
           style={{ animationDelay: `${kingdomId * 0.15}s` }}
         >
-          {nodeImageUrl ? <img src={nodeImageUrl} alt="" className="h-full w-full object-cover" /> : (unlocked ? icon : '🔒')}
+          <span className={unlocked ? '' : 'grayscale'}>{nodeImageUrl ? <img src={nodeImageUrl} alt="" className="h-full w-full object-cover" /> : icon}</span>
         </div>
       </button>
 

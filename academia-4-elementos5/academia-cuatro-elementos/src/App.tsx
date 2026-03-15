@@ -32,7 +32,7 @@ import {
 } from './utils/cloudSync';
 
 const GameApp: React.FC = () => {
-  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel, resetGame, restoreGame } = useGame();
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, completeArchive, resetLevel, resetGame, restoreGame } = useGame();
   const {
     currentScreen,
     setCurrentScreen,
@@ -185,6 +185,16 @@ const GameApp: React.FC = () => {
     setCurrentScreen('level');
   };
 
+  const handleArchiveReturnToMap = () => {
+    completeArchive();
+    setCurrentScreen('map');
+  };
+
+  const handleArchiveEnterFirstKingdom = () => {
+    completeArchive();
+    handleStartKingdomFromMap(1);
+  };
+
 
   const handleLevelComplete = (wasPerfect: boolean = false) => {
     setChallengeLevelId(currentLevelId);
@@ -246,7 +256,7 @@ const GameApp: React.FC = () => {
       case 'welcome':
         return <WelcomeScreen />;
       case 'archive':
-        return <ArchiveOfNumbersLevel onComplete={() => setCurrentScreen('map')} />;
+        return <ArchiveOfNumbersLevel onEnterFirstKingdom={handleArchiveEnterFirstKingdom} onReturnToMap={handleArchiveReturnToMap} />;
       case 'map':
         return (
           <MapScreen

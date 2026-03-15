@@ -277,6 +277,19 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }));
   };
 
+  const completeArchive = () => {
+    setState(prev => {
+      if (prev.archiveCompleted) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        archiveCompleted: true,
+      };
+    });
+  };
+
 
   const normalizeGameState = (snapshot: Partial<GameState>): GameState => ({
     ...initialState,
@@ -335,6 +348,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       completeLevel,
       completeBoss,
       completeKnowledgeRoom,
+      completeArchive,
       setPlayerInfo,
       resetGame,
       restoreGame,
