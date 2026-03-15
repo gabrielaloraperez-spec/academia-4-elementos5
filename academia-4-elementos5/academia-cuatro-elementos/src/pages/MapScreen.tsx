@@ -19,7 +19,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onArchiveSelect, onKingdom
   const waterUnlocked = archiveCompleted && state.unlockedLevels.includes(4);
   const waterCompleted = archiveCompleted && state.unlockedLevels.includes(5);
   const bossUnlocked = waterCompleted && state.knowledgeRoomsCompleted >= 4;
-  const MAP_BACKGROUND = '/assets/backgrounds/world-map.svg';
+  const MAP_BACKGROUND = 'https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds/world-map.png';
 
   const kingdoms = [
     { kingdomId: 0, title: 'Archivo de los Números', icon: '📚', position: { x: 50, y: 88 }, unlocked: true, completed: archiveCompleted },
