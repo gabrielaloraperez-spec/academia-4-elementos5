@@ -296,6 +296,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     ...snapshot,
     abilityUses: { ...initialState.abilityUses, ...(snapshot.abilityUses || {}) },
     operationMastery: { ...initialState.operationMastery, ...(snapshot.operationMastery || {}) },
+    archiveCompleted:
+      snapshot.archiveCompleted
+      ?? Boolean((snapshot.unlockedLevels?.length ?? 0) > 1 || (snapshot.knowledgeRoomsCompleted ?? 0) > 0),
   });
 
   const restoreGame = (snapshot: Partial<GameState>) => {

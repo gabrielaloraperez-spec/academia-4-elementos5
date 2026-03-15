@@ -99,9 +99,9 @@ const GameApp: React.FC = () => {
 
   useEffect(() => {
     if (state.playerName && currentScreen === 'welcome') {
-      setCurrentScreen('archive');
+      setCurrentScreen('map');
     }
-  }, [state.playerName, currentScreen]);
+  }, [state.playerName, currentScreen, setCurrentScreen]);
 
   useEffect(() => {
     if (!state.playerName || !authSession) return;
@@ -190,12 +190,6 @@ const GameApp: React.FC = () => {
     setCurrentScreen('map');
   };
 
-  const handleArchiveEnterFirstKingdom = () => {
-    completeArchive();
-    handleStartKingdomFromMap(1);
-  };
-
-
   const handleLevelComplete = (wasPerfect: boolean = false) => {
     setChallengeLevelId(currentLevelId);
     setPendingPerfectChallenge(wasPerfect);
@@ -256,7 +250,7 @@ const GameApp: React.FC = () => {
       case 'welcome':
         return <WelcomeScreen />;
       case 'archive':
-        return <ArchiveOfNumbersLevel onEnterFirstKingdom={handleArchiveEnterFirstKingdom} onReturnToMap={handleArchiveReturnToMap} />;
+        return <ArchiveOfNumbersLevel onReturnToMap={handleArchiveReturnToMap} />;
       case 'map':
         return (
           <MapScreen
