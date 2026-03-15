@@ -12,22 +12,22 @@ interface MapScreenProps {
 export const MapScreen: React.FC<MapScreenProps> = ({ onArchiveSelect, onKingdomSelect, onBossSelect }) => {
   const { state } = useGame();
 
-  const archiveCompleted = state.unlockedLevels.length > 1 || state.knowledgeRoomsCompleted > 0;
-  const fireUnlocked = archiveCompleted && state.unlockedLevels.includes(1);
-  const airUnlocked = archiveCompleted && state.unlockedLevels.includes(2);
-  const earthUnlocked = archiveCompleted && state.unlockedLevels.includes(3);
-  const waterUnlocked = archiveCompleted && state.unlockedLevels.includes(4);
-  const waterCompleted = archiveCompleted && state.unlockedLevels.includes(5);
+  const archiveCompleted = state.archiveCompleted;
+  const fireUnlocked = archiveCompleted;
+  const airUnlocked = state.unlockedLevels.includes(2);
+  const earthUnlocked = state.unlockedLevels.includes(3);
+  const waterUnlocked = state.unlockedLevels.includes(4);
+  const waterCompleted = state.unlockedLevels.includes(5);
   const bossUnlocked = waterCompleted && state.knowledgeRoomsCompleted >= 4;
-  const MAP_BACKGROUND = 'https://raw.githubusercontent.com/gabrielaloraperez-spec/academia-4-elementos5/main/academia-4-elementos5/academia-cuatro-elementos/public/assets/backgrounds/world-map.png';
+  const MAP_BACKGROUND = '/assets/backgrounds/world-map.png';
 
   const kingdoms = [
-    { kingdomId: 0, title: 'Archivo de los Números', icon: '📚', position: { x: 50, y: 88 }, unlocked: true, completed: archiveCompleted },
-    { kingdomId: 1, title: 'Reino de la Energía', icon: '🔥', position: { x: 46, y: 72 }, unlocked: fireUnlocked, completed: airUnlocked },
-    { kingdomId: 2, title: 'Reino de la Defensa', icon: '🌬️', position: { x: 54, y: 58 }, unlocked: airUnlocked, completed: earthUnlocked },
-    { kingdomId: 3, title: 'Reino de la Construcción', icon: '🌍', position: { x: 46, y: 44 }, unlocked: earthUnlocked, completed: waterUnlocked },
-    { kingdomId: 4, title: 'Reino de la Distribución', icon: '🌊', position: { x: 54, y: 30 }, unlocked: waterUnlocked, completed: waterCompleted },
-    { kingdomId: 5, title: 'Consejo Final', icon: '👑', position: { x: 50, y: 14 }, unlocked: bossUnlocked },
+    { kingdomId: 0, title: 'Archivo de los Números', icon: '📚', nodeImageUrl: '/assets/backgrounds/guardian-archive.png', position: { x: 50, y: 88 }, unlocked: true, completed: archiveCompleted },
+    { kingdomId: 1, title: 'Reino de la Energía', icon: '🔥', nodeImageUrl: '/assets/backgrounds/node-fire.png', position: { x: 46, y: 72 }, unlocked: fireUnlocked, completed: airUnlocked },
+    { kingdomId: 2, title: 'Reino de la Defensa', icon: '🌬️', nodeImageUrl: '/assets/backgrounds/node-air.png', position: { x: 54, y: 58 }, unlocked: airUnlocked, completed: earthUnlocked },
+    { kingdomId: 3, title: 'Reino de la Construcción', icon: '🌍', nodeImageUrl: '/assets/backgrounds/node-earth.png', position: { x: 46, y: 44 }, unlocked: earthUnlocked, completed: waterUnlocked },
+    { kingdomId: 4, title: 'Reino de la Distribución', icon: '🌊', nodeImageUrl: '/assets/backgrounds/node-water.png', position: { x: 54, y: 30 }, unlocked: waterUnlocked, completed: waterCompleted },
+    { kingdomId: 5, title: 'Torre del Tiempo', icon: '👑', nodeImageUrl: '/assets/backgrounds/node-timetower.png', position: { x: 50, y: 14 }, unlocked: bossUnlocked },
   ];
 
   const paths = [
@@ -68,7 +68,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onArchiveSelect, onKingdom
         <div className="mb-4 rounded-2xl border border-white/25 bg-slate-900/30 backdrop-blur-sm px-4 py-3 text-white flex items-center justify-between">
           <div>
             <h1 className="text-lg md:text-2xl font-extrabold">Mapa del mundo</h1>
-            <p className="text-xs md:text-sm text-white/90">Archivo de los Números → Energía → Defensa → Construcción → Distribución → Consejo Final</p>
+            <p className="text-xs md:text-sm text-white/90">Archivo de los Números → Energía → Defensa → Construcción → Distribución → Torre del Tiempo</p>
           </div>
           <div className="text-right">
             <p className="text-xs text-white/80">Guardián</p>
