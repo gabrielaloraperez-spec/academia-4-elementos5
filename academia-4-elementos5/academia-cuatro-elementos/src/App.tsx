@@ -8,7 +8,8 @@ import {
   KnowledgeRoom,
   BossScreen,
   GameOverScreen,
-  DomainChallengeScreen
+  DomainChallengeScreen,
+  ArchiveOfNumbersLevel
 } from './pages';
 import { levels } from './data/gameData';
 import { useGameState } from './hooks/useGameState';
@@ -178,19 +179,12 @@ const GameApp: React.FC = () => {
     await handleRestartFromBeginning();
   };
 
-  const handleStartDomainChallengeFromMap = (levelId: number) => {
+  const handleStartKingdomFromMap = (levelId: number) => {
     startLevel(levelId);
     setCurrentLevelId(levelId);
-    setChallengeLevelId(levelId);
-    setPendingPerfectChallenge(false);
-    setCurrentScreen('domain_challenge');
+    setCurrentScreen('level');
   };
 
-  const handleStartKnowledgeFromMap = () => {
-    const knowledgeLevelId = Math.min(4, Math.max(1, currentLevelId || 1));
-    setCurrentLevelId(knowledgeLevelId);
-    setCurrentScreen('knowledge');
-  };
 
   const handleLevelComplete = (wasPerfect: boolean = false) => {
     setChallengeLevelId(currentLevelId);
@@ -250,12 +244,20 @@ const GameApp: React.FC = () => {
   const renderScreen = () => {
     switch (currentScreen) {
       case 'welcome':
-        return <WelcomeScreen />;
+        return <WelcomeScreen onStartJourney={() => setCurrentScreen('map')} />;
+      case 'archive':
+        return <ArchiveOfNumbersLevel onComplete={() => setCurrentScreen('map')} />;
       case 'map':
-        return <MapScreen onKingdomSelect={handleStartDomainChallengeFromMap} onKnowledgeSelect={handleStartKnowledgeFromMap} onBossSelect={handleStartBoss} />;
+        return (
+          <MapScreen
+            onArchiveSelect={() => setCurrentScreen('archive')}
+            onKingdomSelect={handleStartKingdomFromMap}
+            onBossSelect={handleStartBoss}
+          />
+        );
       case 'level': {
         const level = getCurrentLevel();
-        if (!level) return <WelcomeScreen />;
+        if (!level) return <WelcomeScreen onStartJourney={() => setCurrentScreen('map')} />;
         return (
           <LevelScreen
             level={level}
@@ -287,7 +289,7 @@ const GameApp: React.FC = () => {
       }
       case 'knowledge': {
         const knowledgeLevel = getCurrentLevel();
-        if (!knowledgeLevel) return <WelcomeScreen />;
+        if (!knowledgeLevel) return <WelcomeScreen onStartJourney={() => setCurrentScreen('map')} />;
         return <KnowledgeRoom level={knowledgeLevel} onComplete={handleKnowledgeComplete} />;
       }
       case 'boss':
@@ -295,7 +297,7 @@ const GameApp: React.FC = () => {
       case 'gameover':
         return <GameOverScreen score={gameOverScore} onRetry={handleRetry} onMenu={handleMenu} isBoss={isBossGameOver} />;
       default:
-        return <WelcomeScreen />;
+        return <WelcomeScreen onStartJourney={() => setCurrentScreen('map')} />;
     }
   };
 
@@ -303,7 +305,7 @@ const GameApp: React.FC = () => {
     <div className="min-h-screen relative">
       {renderScreen()}
 
-      {state.playerName && currentScreen !== 'map' && (
+      {state.playerName && currentScreen !== 'map' && currentScreen !== 'archive' && (
         <button
           onClick={handleBackToMapAnytime}
           className="fixed top-4 right-4 z-50 px-4 py-2 rounded-xl bg-black/70 text-white font-semibold border border-white/20 hover:bg-black/85"
