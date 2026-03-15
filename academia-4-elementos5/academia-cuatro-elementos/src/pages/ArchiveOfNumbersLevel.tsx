@@ -4,7 +4,7 @@ import { Hearts, ManaBar, ProgressBar, ScoreDisplay } from '../components/game/G
 import { useGame } from '../context/useGame';
 
 interface ArchiveOfNumbersLevelProps {
-  onComplete: () => void;
+  onReturnToMap: () => void;
 }
 
 interface ExplanationStep {
@@ -243,7 +243,7 @@ const PowerBar: React.FC<{ power: number }> = ({ power }) => {
   );
 };
 
-export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ onComplete }) => {
+export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ onReturnToMap }) => {
   const { state } = useGame();
   const [phase, setPhase] = useState<ArchivePhase>('intro');
   const [introIndex, setIntroIndex] = useState(0);
@@ -403,10 +403,7 @@ export const ArchiveOfNumbersLevel: React.FC<ArchiveOfNumbersLevelProps> = ({ on
                 <p className="mt-3 text-lg">{completionMessage}</p>
                 <p className="mt-2 text-sm font-semibold">Precisión final: {Math.round(powerPercent)}%</p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <button type="button" onClick={onComplete} className="rounded-xl bg-emerald-700 px-6 py-3 text-emerald-50 font-bold hover:bg-emerald-600">
-                    🔥 Entrar al Reino de la Energía
-                  </button>
-                  <button type="button" onClick={onComplete} className="rounded-xl bg-slate-800 px-6 py-3 text-slate-100 font-semibold hover:bg-slate-700">
+                  <button type="button" onClick={onReturnToMap} className="rounded-xl bg-slate-800 px-6 py-3 text-slate-100 font-semibold hover:bg-slate-700">
                     Regresar al mapa
                   </button>
                 </div>

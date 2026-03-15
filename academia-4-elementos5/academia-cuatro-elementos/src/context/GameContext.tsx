@@ -277,12 +277,28 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }));
   };
 
+  const completeArchive = () => {
+    setState(prev => {
+      if (prev.archiveCompleted) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        archiveCompleted: true,
+      };
+    });
+  };
+
 
   const normalizeGameState = (snapshot: Partial<GameState>): GameState => ({
     ...initialState,
     ...snapshot,
     abilityUses: { ...initialState.abilityUses, ...(snapshot.abilityUses || {}) },
     operationMastery: { ...initialState.operationMastery, ...(snapshot.operationMastery || {}) },
+    archiveCompleted:
+      snapshot.archiveCompleted
+      ?? Boolean((snapshot.unlockedLevels?.length ?? 0) > 1 || (snapshot.knowledgeRoomsCompleted ?? 0) > 0),
   });
 
   const restoreGame = (snapshot: Partial<GameState>) => {
@@ -335,6 +351,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       completeLevel,
       completeBoss,
       completeKnowledgeRoom,
+      completeArchive,
       setPlayerInfo,
       resetGame,
       restoreGame,

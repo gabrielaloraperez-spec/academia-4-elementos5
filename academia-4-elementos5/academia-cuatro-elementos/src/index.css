@@ -105,6 +105,17 @@
   }
 
 
+
+  .animate-node-drift {
+    animation: node-drift 3.6s ease-in-out infinite;
+    will-change: transform, filter;
+  }
+
+  @keyframes node-drift {
+    0%, 100% { transform: scale(1) translateY(0); filter: saturate(1); }
+    50% { transform: scale(1.05) translateY(-2px); filter: saturate(1.1); }
+  }
+
   .story-card-glow {
     box-shadow: 0 0 0 1px rgba(253, 230, 138, 0.35), 0 12px 36px rgba(15, 23, 42, 0.28);
   }

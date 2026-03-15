@@ -32,7 +32,7 @@ import {
 } from './utils/cloudSync';
 
 const GameApp: React.FC = () => {
-  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, resetLevel, resetGame, restoreGame } = useGame();
+  const { state, startLevel, completeLevel, completeBoss, completeKnowledgeRoom, completeArchive, resetLevel, resetGame, restoreGame } = useGame();
   const {
     currentScreen,
     setCurrentScreen,
@@ -99,9 +99,9 @@ const GameApp: React.FC = () => {
 
   useEffect(() => {
     if (state.playerName && currentScreen === 'welcome') {
-      setCurrentScreen('archive');
+      setCurrentScreen('map');
     }
-  }, [state.playerName, currentScreen]);
+  }, [state.playerName, currentScreen, setCurrentScreen]);
 
   useEffect(() => {
     if (!state.playerName || !authSession) return;
@@ -185,6 +185,10 @@ const GameApp: React.FC = () => {
     setCurrentScreen('level');
   };
 
+  const handleArchiveReturnToMap = () => {
+    completeArchive();
+    setCurrentScreen('map');
+  };
 
   const handleLevelComplete = (wasPerfect: boolean = false) => {
     setChallengeLevelId(currentLevelId);
@@ -246,7 +250,7 @@ const GameApp: React.FC = () => {
       case 'welcome':
         return <WelcomeScreen />;
       case 'archive':
-        return <ArchiveOfNumbersLevel onComplete={() => setCurrentScreen('map')} />;
+        return <ArchiveOfNumbersLevel onReturnToMap={handleArchiveReturnToMap} />;
       case 'map':
         return (
           <MapScreen
@@ -277,10 +281,6 @@ const GameApp: React.FC = () => {
             level={challengeLevel}
             onComplete={() => {
               completeLevel(challengeLevelId, pendingPerfectChallenge);
-              if (challengeLevelId === 4) {
-                setCurrentScreen('knowledge');
-                return;
-              }
               setCurrentScreen('map');
             }}
             onFail={() => {
