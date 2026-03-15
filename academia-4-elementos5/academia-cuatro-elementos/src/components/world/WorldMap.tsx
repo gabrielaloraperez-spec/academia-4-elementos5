@@ -41,7 +41,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     <div className="w-full flex justify-center px-2 md:px-4">
       <div className="relative w-full max-w-5xl aspect-[10/14] md:aspect-[16/10] rounded-3xl overflow-hidden border border-white/20 bg-slate-950/50">
         <div
-          className="absolute inset-0 bg-center bg-cover"
+          className="absolute inset-0 bg-center bg-cover animate-background-float"
           style={{ backgroundImage: `linear-gradient(rgba(2,6,23,0.15), rgba(15,23,42,0.2)), url(${backgroundImage})` }}
         />
 

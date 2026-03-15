@@ -40,14 +40,14 @@ export const KingdomNode: React.FC<KingdomNodeProps> = ({
       >
         <div
           className={[
-            'h-full w-full rounded-full border-2 flex items-center justify-center text-2xl md:text-3xl transition-all duration-300 animate-float-air',
+            'h-full w-full rounded-full border-2 flex items-center justify-center text-2xl md:text-3xl transition-all duration-300 animate-float-air overflow-hidden',
             unlocked
               ? 'border-cyan-200 bg-slate-900/45 animate-pulse-glow group-hover:scale-105'
               : 'border-slate-500 bg-slate-900/35 grayscale opacity-65',
           ].join(' ')}
           style={{ animationDelay: `${kingdomId * 0.15}s` }}
         >
-          <span className={unlocked ? '' : 'grayscale'}>{nodeImageUrl ? <img src={nodeImageUrl} alt="" className="h-full w-full object-cover" /> : icon}</span>
+          <span className={unlocked ? '' : 'grayscale'}>{nodeImageUrl ? <img src={nodeImageUrl} alt="" className="h-full w-full object-cover animate-node-drift" /> : icon}</span>
         </div>
       </button>
 
