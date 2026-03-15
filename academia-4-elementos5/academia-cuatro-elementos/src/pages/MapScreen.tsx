@@ -18,7 +18,7 @@ export const MapScreen: React.FC<MapScreenProps> = ({ onArchiveSelect, onKingdom
   const earthUnlocked = state.unlockedLevels.includes(3);
   const waterUnlocked = state.unlockedLevels.includes(4);
   const waterCompleted = state.unlockedLevels.includes(5);
-  const bossUnlocked = waterCompleted && state.knowledgeRoomsCompleted >= 4;
+  const bossUnlocked = waterCompleted;
   const MAP_BACKGROUND = '/assets/backgrounds/world-map.png';
 
   const kingdoms = [
