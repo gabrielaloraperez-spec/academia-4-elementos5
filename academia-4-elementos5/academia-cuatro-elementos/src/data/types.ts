@@ -6,16 +6,6 @@ export interface Problem {
   hint?: string;
 }
 
-export interface KnowledgeContent {
-  title: string;
-  content: string;
-  miniQuestions: {
-    question: string;
-    options: string[];
-    correctAnswer: number;
-  }[];
-}
-
 export interface Level {
   id: number;
   name: string;
@@ -27,7 +17,6 @@ export interface Level {
   bgColor: string;
   accentColor: string;
   problems: Problem[];
-  knowledge: KnowledgeContent;
 }
 
 export interface Ability {

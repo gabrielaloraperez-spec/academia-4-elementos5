@@ -9,7 +9,6 @@ import { ParticleLayer } from '../components/effects/ParticleLayer';
 interface LevelScreenProps {
   level: Level;
   onComplete: () => void;
-  onKnowledge: () => void;
   onExitToMap: () => void;
 }
 

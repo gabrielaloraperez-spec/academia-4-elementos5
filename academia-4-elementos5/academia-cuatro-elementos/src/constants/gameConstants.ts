@@ -21,13 +21,13 @@ export interface GameState {
   playerName: string;
   avatar: string;
   achievements: string[];
-  knowledgeRoomsCompleted: number;
   levelStats: { [key: number]: LevelStats };
   operationMastery: { [key: string]: number };
   totalQuestionsAnswered: number;
   totalCorrect: number;
   currentLevelCorrect: number;
   currentLevelIncorrect: number;
+  archiveCompleted: boolean;
 }
 
 export interface GameContextType {
@@ -38,7 +38,7 @@ export interface GameContextType {
   resetLevel: () => void;
   completeLevel: (levelId: number, wasPerfect: boolean) => void;
   completeBoss: (timeRemaining: number) => void;
-  completeKnowledgeRoom: () => void;
+  completeArchive: () => void;
   setPlayerInfo: (name: string, avatar: string) => void;
   resetGame: () => void;
   restoreGame: (snapshot: Partial<GameState>) => void;
@@ -68,7 +68,6 @@ export const initialState: GameState = {
   playerName: '',
   avatar: '',
   achievements: [],
-  knowledgeRoomsCompleted: 0,
   levelStats: {},
   operationMastery: {
     addition: 0,
@@ -79,7 +78,8 @@ export const initialState: GameState = {
   totalQuestionsAnswered: 0,
   totalCorrect: 0,
   currentLevelCorrect: 0,
-  currentLevelIncorrect: 0
+  currentLevelIncorrect: 0,
+  archiveCompleted: false,
 };
 
 export const GameContext = createContext<GameContextType | undefined>(undefined);

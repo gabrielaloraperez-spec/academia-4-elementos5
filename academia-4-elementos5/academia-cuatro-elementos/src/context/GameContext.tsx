@@ -81,9 +81,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (newState.streak >= 10 && !newAchievements.includes('streak_10')) {
       newAchievements.push('streak_10');
     }
-    if (newState.knowledgeRoomsCompleted >= 1 && !newAchievements.includes('all_knowledge')) {
-      newAchievements.push('all_knowledge');
-    }
     if (!newState.isBossUnlocked && newState.unlockedLevels.includes(5) && !newAchievements.includes('boss_killer')) {
       newAchievements.push('boss_killer');
     }
@@ -270,11 +267,18 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
   };
 
-  const completeKnowledgeRoom = () => {
-    setState(prev => ({
-      ...prev,
-      knowledgeRoomsCompleted: prev.knowledgeRoomsCompleted + 1
-    }));
+
+  const completeArchive = () => {
+    setState(prev => {
+      if (prev.archiveCompleted) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        archiveCompleted: true,
+      };
+    });
   };
 
 
@@ -283,6 +287,9 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     ...snapshot,
     abilityUses: { ...initialState.abilityUses, ...(snapshot.abilityUses || {}) },
     operationMastery: { ...initialState.operationMastery, ...(snapshot.operationMastery || {}) },
+    archiveCompleted:
+      snapshot.archiveCompleted
+      ?? Boolean((snapshot.unlockedLevels?.length ?? 0) > 1),
   });
 
   const restoreGame = (snapshot: Partial<GameState>) => {
@@ -334,7 +341,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       resetLevel,
       completeLevel,
       completeBoss,
-      completeKnowledgeRoom,
+      completeArchive,
       setPlayerInfo,
       resetGame,
       restoreGame,

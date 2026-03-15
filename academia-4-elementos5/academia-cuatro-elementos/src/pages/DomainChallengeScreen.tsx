@@ -2,6 +2,9 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Level, Problem } from '../data/gameData';
 import { playCorrect, playSuccess, playUiClick, playWrong } from '../utils/sound';
 import { getKingdomTheme, withSvgFallback } from '../styles/kingdomThemes';
+import { ElementImbalanceEvent } from '../components/events/ElementImbalanceEvent';
+import { WordProblemCard } from '../components/events/WordProblemCard';
+import { ElementType, generateWordProblemsForElement } from '../utils/generateWordProblem';
 
 interface DomainChallengeScreenProps {
   level: Level | null;
@@ -13,6 +16,8 @@ const TOTAL_TIME_SECONDS = 150;
 const PASS_ACCURACY = 85;
 const MIN_ANSWERS_FOR_EARLY_PASS = 10;
 
+type ChallengePhase = 'domain' | 'event' | 'restore' | 'success' | 'failed';
+
 function shuffle<T>(items: T[]): T[] {
   const cloned = [...items];
   for (let i = cloned.length - 1; i > 0; i -= 1) {
@@ -22,6 +27,14 @@ function shuffle<T>(items: T[]): T[] {
   return cloned;
 }
 
+const getElementType = (level: Level | null): ElementType => {
+  if (!level) return 'energia';
+  if (level.id === 1) return 'energia';
+  if (level.id === 2) return 'defensa';
+  if (level.id === 3) return 'construccion';
+  return 'distribucion';
+};
+
 export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ level, onComplete, onFail }) => {
   const [started, setStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TOTAL_TIME_SECONDS);
@@ -29,17 +42,17 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [answeredCount, setAnsweredCount] = useState(0);
-  const [result, setResult] = useState<'success' | 'failed' | null>(null);
+  const [phase, setPhase] = useState<ChallengePhase>('domain');
+  const [solvedLevels, setSolvedLevels] = useState<number[]>([]);
 
   const mixedProblems = useMemo(() => {
     const source: Problem[] = level?.problems ?? [];
-    return shuffle(
-      source.map((problem, index) => ({
-        ...problem,
-        id: index + 1,
-      })),
-    );
+    return shuffle(source.map((problem, index) => ({ ...problem, id: index + 1 })));
   }, [level]);
+
+  const elementType = getElementType(level);
+
+  const wordProblems = useMemo(() => generateWordProblemsForElement(elementType), [elementType]);
 
   const currentProblem = mixedProblems[currentProblemIndex];
   const challengeTheme = level ? getKingdomTheme(level.operation) : null;
@@ -47,27 +60,34 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
   const accuracy = answeredCount > 0 ? Math.round((correctAnswers / answeredCount) * 100) : 0;
 
   useEffect(() => {
-    if (!started || timeLeft <= 0 || result !== null) return;
+    if (!started || timeLeft <= 0 || phase !== 'domain') return;
 
     const timer = setInterval(() => {
       setTimeLeft((prev) => Math.max(0, prev - 1));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [started, timeLeft, result]);
+  }, [started, timeLeft, phase]);
 
   useEffect(() => {
-    if (!started || result !== null) return;
+    if (!started || phase !== 'domain') return;
 
     if (answeredCount >= MIN_ANSWERS_FOR_EARLY_PASS && accuracy >= PASS_ACCURACY) {
-      setResult('success');
+      setPhase('event');
       return;
     }
 
     if (timeLeft === 0) {
-      setResult(accuracy >= PASS_ACCURACY ? 'success' : 'failed');
+      setPhase(accuracy >= PASS_ACCURACY ? 'event' : 'failed');
     }
-  }, [started, result, answeredCount, accuracy, timeLeft]);
+  }, [started, phase, answeredCount, accuracy, timeLeft]);
+
+  useEffect(() => {
+    if (phase !== 'restore') return;
+    if (solvedLevels.length >= 3) {
+      setPhase('success');
+    }
+  }, [phase, solvedLevels]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -76,7 +96,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
   };
 
   const handleAnswer = (answer: number) => {
-    if (!started || !currentProblem || feedback !== null || timeLeft <= 0 || result !== null) return;
+    if (!started || !currentProblem || feedback !== null || timeLeft <= 0 || phase !== 'domain') return;
 
     const isCorrect = answer === currentProblem.answer;
     setFeedback(isCorrect ? 'correct' : 'incorrect');
@@ -95,6 +115,9 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
     }, 500);
   };
 
+  const handleLevelSolved = (problemLevel: number) => {
+    setSolvedLevels((prev) => (prev.includes(problemLevel) ? prev : [...prev, problemLevel]));
+  };
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -103,17 +126,17 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
         return;
       }
 
-      if (result === 'success' && event.key === 'Enter') {
+      if (phase === 'success' && event.key === 'Enter') {
         onComplete();
         return;
       }
 
-      if (result === 'failed' && event.key === 'Enter') {
+      if (phase === 'failed' && event.key === 'Enter') {
         onFail();
         return;
       }
 
-      if (started && result === null && feedback === null && ['1', '2', '3', '4'].includes(event.key)) {
+      if (started && phase === 'domain' && feedback === null && ['1', '2', '3', '4'].includes(event.key)) {
         const index = Number(event.key) - 1;
         const option = currentProblem?.options[index];
         if (option !== undefined) {
@@ -124,7 +147,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [started, result, feedback, currentProblem]);
+  }, [started, phase, feedback, currentProblem, onComplete, onFail]);
 
   if (!level || mixedProblems.length === 0) {
     return (
@@ -147,12 +170,13 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
           <h1 className="text-3xl font-bold text-indigo-700 mb-4">Reto de Dominio</h1>
           <p className="text-indigo-600 font-semibold mb-3">{level.name}</p>
           <p className="text-gray-700 whitespace-pre-line leading-relaxed">
-            {
-              'Bienvenido al reto de dominio\nYa que te dominado los 3 niveles de este reino, ahora tendrás que demostrar tus habilidades contra reloj.\n\nSi alcanzas 85% o más de respuestas correctas antes de acabar el tiempo, superarás el reto y pasarás a la sala del conocimiento. Con menos de 85%, deberás repetir el reino.'
-            }
+            {'Supera el reto con 85% o más de precisión para activar el evento especial del reino.'}
           </p>
           <button
-            onClick={() => { playUiClick(); setStarted(true); }}
+            onClick={() => {
+              playUiClick();
+              setStarted(true);
+            }}
             className="mt-6 px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl"
           >
             Iniciar reto
@@ -162,27 +186,61 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
     );
   }
 
-  if (result === 'success') {
+  if (phase === 'event') {
+    return (
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(30,41,59,0.72), rgba(15,23,42,0.62)), ${withSvgFallback(challengeTheme?.background ?? '/assets/backgrounds/world-map.svg')}` }}>
+        <ElementImbalanceEvent
+          kingdomName={level.name}
+          onRestore={() => {
+            playUiClick();
+            setPhase('restore');
+          }}
+        />
+      </div>
+    );
+  }
+
+  if (phase === 'restore') {
+    return (
+      <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat p-4" style={{ backgroundImage: `linear-gradient(rgba(30,41,59,0.72), rgba(15,23,42,0.62)), ${withSvgFallback(challengeTheme?.background ?? '/assets/backgrounds/world-map.svg')}` }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="bg-slate-900/65 border border-indigo-300/30 rounded-2xl px-6 py-5 text-white mb-5">
+            <h2 className="text-2xl font-bold text-amber-200">Desequilibrio de los Elementos</h2>
+            <p className="text-indigo-100 mt-2">Resuelve los 3 problemas narrativos sin que se te indique la operación matemática.</p>
+            <p className="text-sm mt-2 text-amber-100">Progreso: {solvedLevels.length}/3 niveles restaurados</p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            {wordProblems.map((problem, index) => (
+              <WordProblemCard
+                key={`${level.id}-${problem.level}-${index}`}
+                title={`Nivel ${problem.level}`}
+                problem={problem}
+                onSolved={() => handleLevelSolved(problem.level)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === 'success') {
     return (
       <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(30,41,59,0.68), rgba(30,41,59,0.52)), ${withSvgFallback(challengeTheme?.background ?? '/assets/backgrounds/world-map.svg')}` }}>
         <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
-          <div className="text-6xl mb-4">🏆</div>
-          <h2 className="text-3xl font-bold text-indigo-700 mb-3">¡Reto superado!</h2>
-          <p className="text-gray-700 text-lg mb-6">
-            Precisión final: <span className="font-bold text-indigo-700">{accuracy}%</span>
-          </p>
-          <button
-            onClick={onComplete}
-            className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl"
-          >
-            Entrar a la sala del conocimiento
+          <div className="text-6xl mb-4">🌟</div>
+          <h2 className="text-3xl font-bold text-indigo-700 mb-3">¡Equilibrio restaurado!</h2>
+          <p className="text-gray-700 text-lg mb-6">Has superado el reto narrativo del reino y restaurado sus fuerzas matemáticas.</p>
+          <button onClick={onComplete} className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl">
+            Volver al mapa
           </button>
         </div>
       </div>
     );
   }
 
-  if (result === 'failed') {
+  if (phase === 'failed') {
     return (
       <div className="min-h-screen w-full bg-cover bg-center bg-no-repeat flex items-center justify-center p-4" style={{ backgroundImage: `linear-gradient(rgba(30,41,59,0.68), rgba(30,41,59,0.52)), ${withSvgFallback(challengeTheme?.background ?? '/assets/backgrounds/world-map.svg')}` }}>
         <div className="max-w-2xl w-full bg-white rounded-3xl shadow-2xl p-8 text-center">
@@ -210,10 +268,7 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
           </div>
 
           <div className="w-full bg-indigo-100 rounded-full h-3 mb-3">
-            <div
-              className="h-3 rounded-full bg-indigo-600 transition-all duration-1000"
-              style={{ width: `${Math.max(0, 100 - progress)}%` }}
-            />
+            <div className="h-3 rounded-full bg-indigo-600 transition-all duration-1000" style={{ width: `${Math.max(0, 100 - progress)}%` }} />
           </div>
 
           <div className="flex justify-between text-sm text-gray-600">
@@ -229,20 +284,10 @@ export const DomainChallengeScreen: React.FC<DomainChallengeScreenProps> = ({ le
 
           <div className="grid grid-cols-2 gap-4">
             {currentProblem?.options.map((option, index) => {
-              const feedbackColor =
-                feedback === null
-                  ? 'bg-indigo-600 hover:bg-indigo-700'
-                  : option === currentProblem.answer
-                    ? 'bg-green-600'
-                    : 'bg-red-600';
+              const feedbackColor = feedback === null ? 'bg-indigo-600 hover:bg-indigo-700' : option === currentProblem.answer ? 'bg-green-600' : 'bg-red-600';
 
               return (
-                <button
-                  key={index}
-                  onClick={() => handleAnswer(option)}
-                  disabled={feedback !== null}
-                  className={`py-4 rounded-xl text-white text-xl font-bold transition ${feedbackColor}`}
-                >
+                <button key={index} onClick={() => handleAnswer(option)} disabled={feedback !== null} className={`py-4 rounded-xl text-white text-xl font-bold transition ${feedbackColor}`}>
                   {option}
                 </button>
               );

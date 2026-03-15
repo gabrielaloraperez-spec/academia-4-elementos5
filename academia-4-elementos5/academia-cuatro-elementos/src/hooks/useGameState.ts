@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-export type Screen = 'welcome' | 'archive' | 'map' | 'level' | 'domain_challenge' | 'knowledge' | 'boss' | 'gameover';
+export type Screen = 'welcome' | 'archive' | 'map' | 'level' | 'domain_challenge' | 'boss' | 'gameover';
 
 export const useGameState = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
